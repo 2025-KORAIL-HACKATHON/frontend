@@ -16,7 +16,7 @@ export default function SplashPage() {
     return () => clearTimeout(t);
   }, [router]);
   return (
-    <MobileFrame>
+    <MobileFrame showTopBar={false} showBottomBar={false}>
       <main className="relative min-h-dvh">
         <Image
           src="/images/splash.png"

@@ -13,7 +13,7 @@ export interface RootLayoutProps {
 const RootLayout = ({ children }: RootLayoutProps) => {
   return (
     <html lang="ko">
-      <body cz-shortcut-listen="true">
+      <body cz-shortcut-listen="true" className="h-dvh overflow-hidden">
         <Providers>{children}</Providers>
       </body>
     </html>
