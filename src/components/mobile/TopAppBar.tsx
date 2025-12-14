@@ -13,13 +13,6 @@ const TopAppBar = () => {
       <div className="font-bold tracking-wide">KORAIL</div>
 
       <div className="flex items-center gap-2">
-        <button
-          onClick={toggleLang}
-          className="px-2 py-1 rounded bg-white/10 text-sm"
-          aria-label="language"
-        >
-          {lang}
-        </button>
         <button className="p-2" aria-label="menu">
           <span className="text-xl">☰</span>
         </button>
