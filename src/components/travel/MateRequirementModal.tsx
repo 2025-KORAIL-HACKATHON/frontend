@@ -20,7 +20,7 @@ function RequirementRow({
       type="button"
       onClick={onClick}
       className={[
-        "w-full text-left flex items-center gap-4 rounded-2xl border p-4",
+        "cursor-pointer w-full text-left flex items-center gap-4 rounded-2xl border p-4",
         done
           ? "border-emerald-400 bg-emerald-50"
           : "border-rose-300 bg-rose-50",
@@ -109,7 +109,6 @@ export default function MateRequirementModal({
       </div>
 
       <div className="mt-6 flex items-center justify-center gap-2 text-sm">
-        <span className="text-xl">👏</span>
         <span className="font-semibold">
           {allDone
             ? "모든 단계를 완료하셨습니다!"
@@ -122,7 +121,7 @@ export default function MateRequirementModal({
         disabled={!allDone}
         onClick={onClose}
         className={[
-          "mt-6 w-full h-12 rounded-full font-bold",
+          "cursor-pointer mt-6 w-full h-12 rounded-full font-bold",
           allDone
             ? "bg-black text-white"
             : "bg-neutral-200 text-neutral-500 cursor-not-allowed",

@@ -66,7 +66,7 @@ export default function TravelProfilePage() {
           <button
             type="button"
             onClick={() => router.back()}
-            className="text-sm"
+            className="text-sm cursor-pointer"
           >
             ←
           </button>

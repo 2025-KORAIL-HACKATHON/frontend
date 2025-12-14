@@ -28,7 +28,10 @@ export default function VerifyPage() {
     <MobileFrame showTopBar={false}>
       <div className="h-full flex flex-col bg-white">
         <header className="h-14 shrink-0 flex items-center gap-3 px-4 border-b">
-          <button onClick={() => router.back()} className="text-sm">
+          <button
+            onClick={() => router.back()}
+            className="text-sm cursor-pointer"
+          >
             ←
           </button>
           <div className="font-bold">본인인증</div>

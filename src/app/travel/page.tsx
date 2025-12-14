@@ -101,11 +101,11 @@ export default function TravelPage() {
               <div className="text-lg font-black">여행 메이트 구하기</div>
             </div>
 
-            {/* ✅ 여기만 변경: 모달 오픈 */}
+            {/* 여기만 변경: 모달 오픈 */}
             <button
               type="button"
               onClick={openModal}
-              className="rounded-full border px-3 py-2 text-xs font-semibold"
+              className="cursor-pointer rounded-full border px-3 py-2 text-xs font-semibold"
             >
               여행 메이트 구하기
             </button>
