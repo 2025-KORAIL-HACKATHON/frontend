@@ -29,7 +29,7 @@ export default function MatchedPage() {
             <button
               type="button"
               onClick={() => router.back()}
-              className="p-2 -ml-2"
+              className="cursor-pointer p-2 -ml-2"
               aria-label="뒤로가기"
             >
               <IconBack />
@@ -93,7 +93,7 @@ export default function MatchedPage() {
             <button
               type="button"
               onClick={() => router.push(`/travel/chat/room-${params.postId}`)}
-              className="mt-6 w-full h-12 rounded-2xl bg-sky-500 text-white font-black"
+              className="cursor-pointer mt-6 w-full h-12 rounded-2xl bg-sky-500 text-white font-black"
             >
               채팅으로 이동
             </button>

@@ -419,9 +419,6 @@ export default function ItineraryPage() {
                   </div>
                 ))}
               </div>
-
-              {/* 하단 버튼에 가리지 않도록 여백 */}
-              <div className="h-24" />
             </div>
           </div>
 

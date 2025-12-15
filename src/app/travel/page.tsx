@@ -113,7 +113,7 @@ export default function TravelPage() {
             <button
               type="button"
               onClick={() =>
-                openModalOrGo(() => router.push("/travel/ko-trip"))
+                openModalOrGo(() => router.push("/travel/recommend/input"))
               }
               className="cursor-pointer rounded-full bg-white/90 px-3 py-2 text-xs font-semibold text-neutral-900 shadow"
             >
