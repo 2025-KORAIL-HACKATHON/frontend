@@ -261,16 +261,8 @@ export default function KoTripInfoStep1Page() {
                   onChange={(e) =>
                     setForm((p) => ({ ...p, startDate: e.target.value }))
                   }
-                  className="w-full h-11 rounded-xl border px-3 pr-10 text-sm"
+                  className="w-full h-11 rounded-xl border px-3 pr-3 text-sm"
                 />
-                <div className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none opacity-70">
-                  <Image
-                    src="/icons/calendar.svg"
-                    alt=""
-                    width={18}
-                    height={18}
-                  />
-                </div>
               </div>
 
               <div className="relative">
@@ -281,16 +273,8 @@ export default function KoTripInfoStep1Page() {
                   onChange={(e) =>
                     setForm((p) => ({ ...p, endDate: e.target.value }))
                   }
-                  className="w-full h-11 rounded-xl border px-3 pr-10 text-sm"
+                  className="w-full h-11 rounded-xl border px-3 pr-3 text-sm"
                 />
-                <div className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none opacity-70">
-                  <Image
-                    src="/icons/calendar.svg"
-                    alt=""
-                    width={18}
-                    height={18}
-                  />
-                </div>
               </div>
             </div>
           </div>
@@ -401,7 +385,7 @@ export default function KoTripInfoStep1Page() {
         </div>
 
         {/* 하단 버튼 */}
-        <div className="sticky bottom-0 z-10 bg-white border-t px-5 py-4">
+        <div className="sticky bottom-0 z-10 bg-white px-5 py-4">
           <button
             type="button"
             disabled={!isValid}

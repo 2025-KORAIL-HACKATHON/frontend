@@ -213,7 +213,7 @@ export default function KoTripInfoStep2Page() {
           </div>
         </div>
 
-        <div className="sticky bottom-0 z-10 bg-white border-t px-5 py-4 flex gap-3">
+        <div className="sticky bottom-0 z-10 bg-white px-5 py-4 flex gap-3">
           <button
             type="button"
             onClick={() => router.back()}

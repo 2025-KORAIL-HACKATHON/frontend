@@ -72,6 +72,9 @@ function NeedInfoModal({
 }
 
 function PostCard({ p, onClick }: { p: TripPost; onClick: () => void }) {
+  const thumb =
+    p.purposeImages?.[Number(p.id) % (p.purposeImages?.length ?? 1)];
+
   return (
     <button
       type="button"
@@ -79,7 +82,18 @@ function PostCard({ p, onClick }: { p: TripPost; onClick: () => void }) {
       className="cursor-pointer w-full text-left py-5 border-b border-gray-300"
     >
       <div className="flex gap-4">
-        <div className="h-28 w-28 rounded-2xl bg-neutral-200 shrink-0" />
+        <div className="relative h-28 w-28 rounded-2xl bg-neutral-200 shrink-0 overflow-hidden">
+          {thumb ? (
+            <Image
+              src={thumb}
+              alt="여행 목적"
+              fill
+              sizes="112px"
+              className="object-cover"
+              priority={false}
+            />
+          ) : null}
+        </div>
 
         <div className="flex-1 min-w-0">
           <div className="font-black text-base leading-tight">{p.title}</div>
@@ -162,7 +176,24 @@ export default function KoTripPage() {
             </button>
 
             <div className="flex-1">
-              <div className="h-11 rounded-2xl border border-sky-400 bg-white" />
+              <div className="mt-2 flex justify-center">
+                <button
+                  type="button"
+                  onClick={() =>
+                    guardOrRun(() => router.push("/travel/ko-trip/filter"))
+                  }
+                  className="cursor-pointer inline-flex items-center gap-2 h-9 px-4 rounded-full bg-sky-500 text-white text-xs font-bold shadow"
+                >
+                  맞춤형 모집글 확인하기
+                  <Image
+                    src="/icons/sliders.svg"
+                    alt=""
+                    width={18}
+                    height={18}
+                    className="block"
+                  />
+                </button>
+              </div>
             </div>
 
             {/* 채팅 목록으로 이동 */}
@@ -179,25 +210,6 @@ export default function KoTripPage() {
                 height={22}
                 className="block"
                 priority
-              />
-            </button>
-          </div>
-
-          <div className="mt-3 flex justify-center">
-            <button
-              type="button"
-              onClick={() =>
-                guardOrRun(() => router.push("/travel/ko-trip/filter"))
-              }
-              className="cursor-pointer inline-flex items-center gap-2 h-9 px-4 rounded-full bg-sky-500 text-white text-xs font-bold shadow"
-            >
-              맞춤형 모집글 확인하기
-              <Image
-                src="/icons/sliders.svg"
-                alt=""
-                width={18}
-                height={18}
-                className="block"
               />
             </button>
           </div>

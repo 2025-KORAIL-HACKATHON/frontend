@@ -189,7 +189,10 @@ export default function RecommendInputPage() {
             <div className="justify-self-center font-bold">정보 입력</div>
             <div className="justify-self-end w-6" />
           </div>
+        </header>
 
+        {/* 본문 스크롤 */}
+        <div className="flex-1 min-h-0 overflow-y-auto px-5 pb-6">
           {/* 추가: 이미지처럼 "왼쪽 문구 + 가운데 svg" */}
           <div className="px-5 pb-4">
             <div className="relative h-10">
@@ -203,18 +206,9 @@ export default function RecommendInputPage() {
                   priority
                 />
               </div>
-
-              {/* 문구: SVG의 왼쪽 아래 */}
-              <div className="absolute left-1/2 top-14 -translate-x-48 text-sm font-semibold text-neutral-700">
-                여행지 추천받기 시작할까요?
-              </div>
             </div>
           </div>
-        </header>
-
-        {/* 본문 스크롤 */}
-        <div className="flex-1 min-h-0 overflow-y-auto px-5 py-6 pb-6">
-          <div className="text-lg font-bold">여행 관련 정보</div>
+          <div className="text-lg font-bold pt-4">여행 관련 정보</div>
 
           {/* 여행 유형 */}
           <div className="mt-6">

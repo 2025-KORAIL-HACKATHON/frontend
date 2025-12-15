@@ -130,7 +130,7 @@ export default function TravelProfilePage() {
         </header>
 
         {/* 본문 */}
-        <div className="flex-1 min-h-0 overflow-y-auto px-6 pt-6 pb-28">
+        <div className="flex-1 min-h-0 overflow-y-auto px-6 pt-6 pb-6">
           {/* 아바타 + 본인인증 */}
           <div className="flex flex-col items-center">
             <div className="relative h-20 w-20 rounded-full bg-neutral-100 flex items-center justify-center">

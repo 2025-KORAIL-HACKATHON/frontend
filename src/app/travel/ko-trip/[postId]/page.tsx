@@ -4,6 +4,7 @@ import Image from "next/image";
 import { useMemo, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import MobileFrame from "@/components/mobile/MobileFrame";
+import type { TripPost } from "@/lib/koTripMock";
 import { mockPosts } from "@/lib/koTripMock";
 
 function IconBack() {
@@ -23,9 +24,11 @@ function IconBack() {
 function ProfileModal({
   open,
   onClose,
+  post,
 }: {
   open: boolean;
   onClose: () => void;
+  post: TripPost;
 }) {
   if (!open) return null;
 
@@ -42,14 +45,18 @@ function ProfileModal({
             <div className="flex items-center gap-3">
               <div className="h-12 w-12 rounded-full bg-neutral-200 overflow-hidden" />
               <div>
-                <div className="font-black">사용자 이름</div>
-                <div className="text-xs text-neutral-500">30대 | 여성</div>
+                <div className="font-black">{post.nickname}</div>
+                <div className="text-xs text-neutral-500">
+                  {post.ageGroup} | {post.gender}
+                </div>
               </div>
             </div>
 
             <button
               onClick={onClose}
               className="h-9 w-9 rounded-full hover:bg-neutral-100 flex items-center justify-center"
+              aria-label="닫기"
+              type="button"
             >
               <span className="text-xl leading-none">×</span>
             </button>
@@ -66,7 +73,7 @@ function ProfileModal({
             </div>
 
             <div className="mt-3 rounded-xl border p-3 text-xs text-neutral-600">
-              사용자가 입력해둔 소개글이 보임
+              {post.desc}
             </div>
 
             <div className="mt-3 flex gap-2 flex-wrap">
@@ -88,21 +95,43 @@ function ProfileModal({
 
 export default function KoTripDetailPage() {
   const router = useRouter();
-  const params = useParams<{ postId: string }>();
-  const postId = params.postId;
+  const params = useParams();
 
-  const post = useMemo(
-    () => mockPosts.find((p) => p.id === postId) ?? mockPosts[0],
-    [postId]
-  );
+  const postIdRaw = (params as { postId?: string | string[] })?.postId;
+  const postId = Array.isArray(postIdRaw) ? postIdRaw[0] : postIdRaw;
+
+  const post = useMemo(() => {
+    if (!postId) return mockPosts[0];
+    return mockPosts.find((p) => p.id === postId) ?? mockPosts[0];
+  }, [postId]);
+
   const [openProfile, setOpenProfile] = useState(false);
+
+  // 목록 페이지와 동일한 썸네일 규칙
+  const thumb =
+    post.purposeImages?.[Number(post.id) % (post.purposeImages?.length ?? 1)];
+
+  const chips = useMemo(() => {
+    const arr: string[] = [];
+    arr.push(`${post.start} ~ ${post.end} ${post.daysText}`);
+    arr.push("2명 모집"); // 더미
+    arr.push("중간"); // 더미
+    arr.push("인당 30만원대"); // 더미
+    // purposeImages가 9장이라면 "목적 3개" 같은 더미도 가능
+    arr.push("여행 목적"); // 더미
+    return arr;
+  }, [post]);
 
   return (
     <MobileFrame showTopBar={false} showBottomBar={false}>
-      <ProfileModal open={openProfile} onClose={() => setOpenProfile(false)} />
+      <ProfileModal
+        open={openProfile}
+        onClose={() => setOpenProfile(false)}
+        post={post}
+      />
 
       <div className="h-full bg-white flex flex-col">
-        <header className="shrink-0 px-4 pt-3 pb-3  bg-white">
+        <header className="shrink-0 px-4 pt-3 pb-3 bg-white">
           <div className="flex items-center justify-between">
             <button
               type="button"
@@ -118,27 +147,38 @@ export default function KoTripDetailPage() {
         </header>
 
         <div className="flex-1 min-h-0 overflow-y-auto px-5 py-5">
-          <div className="h-44 rounded-2xl bg-neutral-200" />
+          {/* 상단 이미지 */}
+          <div className="relative h-44 rounded-2xl bg-neutral-200 overflow-hidden">
+            {thumb ? (
+              <Image
+                src={thumb}
+                alt="여행 목적 이미지"
+                fill
+                sizes="(max-width: 480px) 92vw, 520px"
+                className="object-cover"
+                priority
+              />
+            ) : null}
+            <div className="absolute inset-0 bg-black/10" />
+          </div>
 
-          <div className="mt-4 text-2xl font-black">동행 구인 글 제목</div>
-          <div className="mt-2 flex items-center gap-2 text-sm text-neutral-700">
+          {/* 제목/설명 */}
+          <div className="mt-4 text-2xl font-black">{post.title}</div>
+          <div className="mt-2 text-sm text-neutral-700">{post.desc}</div>
+
+          {/* 기간 */}
+          <div className="mt-3 flex items-center gap-2 text-sm text-neutral-700">
             <span className="h-2 w-2 rounded-full bg-neutral-800" />
-            여행 지역 표시
+            <span>
+              {post.start} ~ {post.end} {post.daysText}
+            </span>
           </div>
 
           {/* chips */}
           <div className="mt-4 flex flex-wrap gap-2">
-            {[
-              "25.12.14 ~ 25.12.15 (총 1박 2일)",
-              "n명 모집",
-              "여유로움",
-              "인당 30만원대",
-              "여행 목적",
-              "여행 목적",
-              "여행 목적",
-            ].map((c, i) => (
+            {chips.map((c, i) => (
               <span
-                key={i}
+                key={`${c}-${i}`}
                 className="px-3 py-1 rounded-md shadow text-xs text-neutral-700 bg-white"
               >
                 {c}
@@ -165,7 +205,7 @@ export default function KoTripDetailPage() {
           <div className="mt-6">
             <div className="font-black mb-2">동행자 관련 정보</div>
             <div className="rounded-xl shadow p-4 text-sm text-neutral-600">
-              모달 입력받은거 취합해서 ai 글쓰기 결과로
+              (더미) 동행자 조건/취향 요약이 들어갑니다.
             </div>
           </div>
 
@@ -183,7 +223,7 @@ export default function KoTripDetailPage() {
                   {post.nickname} | {post.ageGroup} | {post.gender}
                 </div>
                 <div className="mt-1 text-sm text-neutral-700 line-clamp-2">
-                  작성자 관련 정보 “작성자 코멘트”
+                  {post.desc}
                 </div>
               </div>
             </button>
@@ -201,7 +241,7 @@ export default function KoTripDetailPage() {
           </button>
           <button
             type="button"
-            onClick={() => router.push(`/travel/ko-trip/${postId}/matched`)}
+            onClick={() => router.push(`/travel/ko-trip/${post.id}/matched`)}
             className="cursor-pointer flex-1 h-12 rounded-2xl bg-sky-500 text-white font-black"
           >
             매칭 신청하기
