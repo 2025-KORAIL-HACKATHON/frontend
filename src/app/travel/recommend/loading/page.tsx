@@ -67,7 +67,7 @@ export default function RecommendLoadingPage() {
     return () => clearInterval(id);
   }, [safeInput, router]);
 
-  // ✅ progress에 따라 영상 재생/정지 제어
+  // progress에 따라 영상 재생/정지 제어
   useEffect(() => {
     const v = videoRef.current;
     if (!v) return;
@@ -131,7 +131,7 @@ export default function RecommendLoadingPage() {
           기다려주세요!
         </p>
 
-        {/* ✅ 기존 박스에 mp4 삽입 */}
+        {/* 기존 박스에 mp4 삽입 */}
         <div className="mt-10 h-64 rounded-3xl bg-sky-100 overflow-hidden">
           <video
             ref={videoRef}

@@ -114,21 +114,22 @@ export default function TravelPage() {
               onClick={openModal}
               className="cursor-pointer rounded-full bg-white/90 px-3 py-2 text-xs font-semibold text-neutral-900 shadow"
             >
-              맞춤 일정 추천받기
+              ko-mate 시작하기
             </button>
           </div>
 
           <div className="mt-4">
             <RegionCarousel
-              durationSec={5}
               slides={[
+                { src: "/images/seoul.png", label: "Seoul" },
+                { src: "/images/daejeon.png", label: "Daejeon" },
+                { src: "/images/busan.png", label: "Busan" },
                 { src: "/images/daegu.png", label: "Daegu" },
                 { src: "/images/gangwon.png", label: "Gangwon" },
                 { src: "/images/jeju.png", label: "Jeju" },
-                { src: "/images/daejeon.png", label: "Daejeon" },
-                { src: "/images/seoul.png", label: "Seoul" },
-                { src: "/images/busan.png", label: "Busan" },
               ]}
+              height={190}
+              slideBasis={0.95}
             />
           </div>
         </section>
@@ -147,7 +148,7 @@ export default function TravelPage() {
               onClick={openModal}
               className="cursor-pointer rounded-full bg-white/90 px-3 py-2 text-xs font-semibold text-neutral-900 shadow"
             >
-              여행 메이트 구하기
+              ko-trip 시작하기
             </button>
           </div>
 

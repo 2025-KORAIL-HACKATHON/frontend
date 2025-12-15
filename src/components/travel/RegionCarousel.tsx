@@ -1,80 +1,131 @@
 "use client";
 
 import Image from "next/image";
+import { useEffect, useMemo, useRef, useState } from "react";
 
-type Slide = {
-  src: string;
-  label: string;
-};
+type Slide = { src: string; label: string };
 
 export default function RegionCarousel({
   slides,
-  height = 190, // 더 크게
-  durationSec = 18, // 더 빠르게 (작을수록 빠름)
+  height = 190,
+  slideBasis = 0.8,
+  speedPxPerSec = 50,
 }: {
   slides: Slide[];
   height?: number;
-  durationSec?: number;
+  slideBasis?: number;
+  speedPxPerSec?: number;
 }) {
-  const loop = [...slides, ...slides];
+  // 2세트만 있으면 충분 (transform 기반)
+  const loop = useMemo(() => [...slides, ...slides], [slides]);
+
+  const trackRef = useRef<HTMLDivElement>(null);
+  const xRef = useRef(0);
+  const rafRef = useRef<number | null>(null);
+  const draggingRef = useRef(false);
+  const lastXRef = useRef(0);
+  const lastTsRef = useRef<number | null>(null);
+
+  const slideWidthRef = useRef(0);
+
+  /** 자동 이동 */
+  const tick = (ts: number) => {
+    if (!trackRef.current) return;
+
+    const last = lastTsRef.current ?? ts;
+    const dt = Math.min(50, ts - last);
+    lastTsRef.current = ts;
+
+    if (!draggingRef.current) {
+      xRef.current -= (speedPxPerSec * dt) / 1000;
+    }
+
+    const loopWidth = slideWidthRef.current * slides.length;
+    if (loopWidth > 0 && Math.abs(xRef.current) >= loopWidth) {
+      xRef.current += loopWidth;
+    }
+
+    trackRef.current.style.transform = `translateX(${xRef.current}px)`;
+    rafRef.current = requestAnimationFrame(tick);
+  };
+
+  const start = () => {
+    if (rafRef.current == null) {
+      rafRef.current = requestAnimationFrame(tick);
+    }
+  };
+
+  const stop = () => {
+    if (rafRef.current != null) {
+      cancelAnimationFrame(rafRef.current);
+      rafRef.current = null;
+    }
+    lastTsRef.current = null;
+  };
+
+  useEffect(() => {
+    const el = trackRef.current;
+    if (!el) return;
+
+    // 첫 슬라이드 기준 폭 계산
+    const first = el.children[0] as HTMLElement | undefined;
+    if (first) {
+      slideWidthRef.current = first.offsetWidth + 16; // gap 포함
+    }
+
+    start();
+    return stop;
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   return (
-    <div className="relative w-full overflow-hidden rounded-2xl">
-      <div className="rc-track" style={{ ["--dur" as any]: `${durationSec}s` }}>
+    <div
+      className="relative w-full overflow-hidden touch-pan-x"
+      onPointerDown={(e) => {
+        draggingRef.current = true;
+        lastXRef.current = e.clientX;
+      }}
+      onPointerMove={(e) => {
+        if (!draggingRef.current) return;
+        const dx = e.clientX - lastXRef.current;
+        lastXRef.current = e.clientX;
+        xRef.current += dx;
+        if (trackRef.current) {
+          trackRef.current.style.transform = `translateX(${xRef.current}px)`;
+        }
+      }}
+      onPointerUp={() => {
+        draggingRef.current = false;
+      }}
+      onPointerLeave={() => {
+        draggingRef.current = false;
+      }}
+    >
+      <div ref={trackRef} className="flex gap-4 px-2 will-change-transform">
         {loop.map((s, idx) => (
           <div
             key={`${s.label}-${idx}`}
-            className="rc-slide relative overflow-hidden rounded-2xl bg-neutral-200"
-            style={{ height }}
+            className="relative bg-neutral-200 overflow-hidden"
+            style={{
+              height,
+              flex: `0 0 ${slideBasis * 100}%`,
+            }}
           >
             <Image
               src={s.src}
               alt={s.label}
               fill
-              sizes="(max-width: 480px) 92vw, 420px"
-              className="object-cover"
+              className="object-cover pointer-events-none"
+              sizes="(max-width: 480px) 92vw, 520px"
               priority={idx < slides.length}
             />
-
-            {/* 아래쪽 그라데이션 + 라벨 */}
             <div className="absolute inset-x-0 bottom-0 h-20 bg-linear-to-t from-black/60 to-transparent" />
-            <div className="absolute left-4 bottom-4 text-white font-black text-xl drop-shadow">
+            <div className="absolute left-4 bottom-4 text-white text-xl font-black drop-shadow">
               {s.label}
             </div>
           </div>
         ))}
       </div>
-
-      <style jsx>{`
-        .rc-track {
-          display: flex;
-          gap: 14px;
-          width: max-content;
-          animation: rc-scroll var(--dur) linear infinite;
-          will-change: transform;
-          transform: translateZ(0);
-        }
-
-        /* 사진을 더 넓게: 거의 한 장이 화면을 채움 */
-        .rc-slide {
-          flex: 0 0 150%;
-        }
-
-        @keyframes rc-scroll {
-          0% {
-            transform: translateX(0);
-          }
-          100% {
-            transform: translateX(-50%);
-          }
-        }
-
-        @media (prefers-reduced-motion: reduce) {
-          .rc-track {
-            animation: none;
-          }
-        }
-      `}</style>
     </div>
   );
 }
