@@ -79,7 +79,7 @@ export default function PackageResultPage() {
         {/* 본문 + 하단 버튼 레이아웃 */}
         <div className="flex-1 min-h-0 flex flex-col">
           {/* 본문만 스크롤 */}
-          <div className="flex-1 min-h-0 overflow-y-auto px-5 py-6 pb-24">
+          <div className="flex-1 min-h-0 overflow-y-auto px-5 py-6">
             <div className="font-bold text-lg">
               {input.region1} · {input.period}
             </div>

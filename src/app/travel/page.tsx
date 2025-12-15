@@ -145,7 +145,7 @@ export default function TravelPage() {
 
             <button
               type="button"
-              onClick={openModal}
+              onClick={() => router.push("/travel/ko-trip")}
               className="cursor-pointer rounded-full bg-white/90 px-3 py-2 text-xs font-semibold text-neutral-900 shadow"
             >
               ko-trip 시작하기
