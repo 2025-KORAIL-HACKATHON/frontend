@@ -239,7 +239,7 @@ export default function TravelProfilePage() {
               <button
                 type="button"
                 onClick={onSave}
-                className="w-full h-12 rounded-xl bg-sky-500 text-white font-bold"
+                className="cursor-pointer w-full h-12 rounded-xl bg-sky-500 text-white font-bold"
               >
                 저장
               </button>

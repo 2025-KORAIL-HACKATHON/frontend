@@ -8,15 +8,6 @@ import MobileFrame from "@/components/mobile/MobileFrame";
 import MateRequirementModal from "@/components/travel/MateRequirementModal";
 import { TravelProfile } from "@/types/profile";
 
-// mock 상태(나중에 API/스토어로 교체)
-const PURCHASE_KEY = "korail.purchaseHistory.v1";
-const CERT_KEY = "korail.certified.v1";
-
-function getBool(key: string) {
-  if (typeof window === "undefined") return false;
-  return localStorage.getItem(key) === "true";
-}
-
 function Avatar({ seed }: { seed: string }) {
   const initials = seed?.slice(0, 1).toUpperCase() || "";
   return (
@@ -35,16 +26,22 @@ export default function TravelPage() {
 
   if (!ready) return null;
 
-  // 타입 좁히기: profile이 있으면 true
   const hasProfile = profile !== null;
   const profileOk = hasProfile;
 
   const openModal = () => {
+    // 프로필 있으면 모달 없이 바로 이동
+    if (profileOk) {
+      router.push("/travel/recommend/input");
+      return;
+    }
+    // 프로필 없으면 모달 표시
     setOpenReq(true);
   };
 
   return (
     <MobileFrame>
+      {/* 프로필 없을 때만 의미 있는 모달 */}
       <MateRequirementModal
         open={openReq}
         onClose={() => setOpenReq(false)}
@@ -77,7 +74,6 @@ export default function TravelPage() {
           </div>
 
           <div className="absolute right-4 top-14 flex flex-col items-center gap-2">
-            {/* 아바타/이미지 분기 */}
             <div>
               {hasProfile ? (
                 <div className="relative h-10 w-10 overflow-hidden rounded-full border border-white/40">
@@ -137,6 +133,7 @@ export default function TravelPage() {
               국내 여행지 코스를 추천받아 보세요
             </div>
             <button
+              type="button"
               onClick={openModal}
               className="cursor-pointer rounded-full bg-white/90 px-3 py-2 text-xs font-semibold text-neutral-900 shadow"
             >
