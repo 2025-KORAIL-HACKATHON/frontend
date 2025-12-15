@@ -19,14 +19,6 @@ const PURPOSES = [
   "SNS 핫플",
 ] as const;
 
-const PERIODS: RecommendInput["period"][] = [
-  "당일",
-  "1박2일",
-  "2박3일",
-  "3박4일",
-  "4박이상",
-];
-
 const INTENSITY: RecommendInput["intensity"][] = ["여유", "중간", "강행군"];
 const PEOPLE: RecommendInput["people"][] = ["혼자서", "단둘이", "3명 이상"];
 
@@ -56,7 +48,6 @@ function Chip({
 }
 
 function toDate(yyyyMMdd: string) {
-  // input[type=date] 값은 YYYY-MM-DD
   const [y, m, d] = yyyyMMdd.split("-").map(Number);
   if (!y || !m || !d) return null;
   return new Date(y, m - 1, d);
@@ -95,9 +86,10 @@ export default function RecommendInputPage() {
   const [provinceCode, setProvinceCode] = useState("");
   const [districtCode, setDistrictCode] = useState("");
 
-  // 기간/기타
+  // ✅ 여행 목적: 단일 선택
+  const [purpose, setPurpose] = useState<string>("");
+
   const [period, setPeriod] = useState<RecommendInput["period"] | "">("");
-  const [purposes, setPurposes] = useState<string[]>([]);
   const [intensity, setIntensity] = useState<RecommendInput["intensity"] | "">(
     ""
   );
@@ -120,17 +112,10 @@ export default function RecommendInputPage() {
     return districtsOfProvince.find((d) => d.code === districtCode)?.name ?? "";
   }, [districtCode, districtsOfProvince]);
 
-  const togglePurpose = (p: string) => {
-    setPurposes((prev) =>
-      prev.includes(p) ? prev.filter((x) => x !== p) : [...prev, p]
-    );
-  };
-
   // 날짜 선택 시, 종료일이 시작일보다 빠르면 자동 보정
   const onChangeStart = (v: string) => {
     setStartDate(v);
     if (endDate && v && endDate < v) setEndDate(v);
-    // 날짜 기반으로 period 자동 추천(선택 UX 개선)
     if (v && endDate) {
       const suggested = suggestPeriodLabel(v, endDate);
       if (suggested) setPeriod(suggested);
@@ -138,7 +123,7 @@ export default function RecommendInputPage() {
   };
 
   const onChangeEnd = (v: string) => {
-    if (startDate && v && v < startDate) return; // (선택) 무시
+    if (startDate && v && v < startDate) return;
     setEndDate(v);
     if (startDate && v) {
       const suggested = suggestPeriodLabel(startDate, v);
@@ -154,7 +139,7 @@ export default function RecommendInputPage() {
       !!startDate &&
       !!endDate &&
       !!period &&
-      purposes.length > 0 &&
+      !!purpose && // ✅ 단일 목적 체크
       !!intensity &&
       !!people
     );
@@ -165,7 +150,7 @@ export default function RecommendInputPage() {
     startDate,
     endDate,
     period,
-    purposes,
+    purpose,
     intensity,
     people,
   ]);
@@ -175,17 +160,17 @@ export default function RecommendInputPage() {
 
     const payload: RecommendInput = {
       travelType,
-
-      // region1/2를 “이름”으로 저장 (원하면 code로 저장하도록 바꿔줄게)
       region1: provinceName,
       region2: districtName,
 
       period: period as RecommendInput["period"],
-      purposes,
+
+      // ✅ 목적을 배열로 저장해야 기존 타입( string[] )과 호환됨
+      purposes: [purpose],
+
       intensity: intensity as RecommendInput["intensity"],
       people: people as RecommendInput["people"],
 
-      // 날짜
       startDate,
       endDate,
     };
@@ -198,7 +183,7 @@ export default function RecommendInputPage() {
     <MobileFrame showTopBar={false} showBottomBar={false}>
       <div className="h-full flex flex-col bg-white">
         {/* 고정 헤더 */}
-        <header className="h-14 shrink-0 grid grid-cols-3 items-center px-4 border-b bg-white">
+        <header className="h-14 shrink-0 grid grid-cols-3 items-center px-4 bg-white">
           <button
             type="button"
             onClick={() => router.back()}
@@ -234,7 +219,7 @@ export default function RecommendInputPage() {
             </div>
           </div>
 
-          {/* 여행 날짜(달력) */}
+          {/* 여행 날짜 */}
           <div className="mt-6">
             <div className="text-sm font-semibold mb-2">여행 날짜</div>
             <div className="grid grid-cols-2 gap-3">
@@ -261,16 +246,16 @@ export default function RecommendInputPage() {
             </div>
           </div>
 
-          {/* 지역(시/도 → 구/군) */}
+          {/* 지역 */}
           <div className="mt-6">
             <div className="text-sm font-semibold mb-2">여행 지역</div>
-            <div className="grid grid-cols-2 gap-3">
+            <div className="cursor-pointer grid grid-cols-2 gap-3">
               <select
-                className="h-11 rounded-xl border px-3 text-sm"
+                className="h-11 rounded-xl border px-3 cursor-pointer text-sm"
                 value={provinceCode}
                 onChange={(e) => {
                   setProvinceCode(e.target.value);
-                  setDistrictCode(""); // 시/도 바뀌면 구/군 초기화
+                  setDistrictCode("");
                 }}
               >
                 <option value="">시/도 선택</option>
@@ -282,7 +267,7 @@ export default function RecommendInputPage() {
               </select>
 
               <select
-                className="h-11 rounded-xl border px-3 text-sm"
+                className="h-11 rounded-xl border px-3 cursor-pointer text-sm"
                 value={districtCode}
                 onChange={(e) => setDistrictCode(e.target.value)}
                 disabled={!provinceCode}
@@ -299,17 +284,17 @@ export default function RecommendInputPage() {
             </div>
           </div>
 
-          {/* 목적 */}
+          {/* 목적 (단일선택) */}
           <div className="mt-6">
             <div className="text-sm font-semibold mb-2">
-              여행 목적 (다중선택)
+              여행 목적 (단일선택)
             </div>
             <div className="flex flex-wrap gap-2">
               {PURPOSES.map((p) => (
                 <Chip
                   key={p}
-                  active={purposes.includes(p)}
-                  onClick={() => togglePurpose(p)}
+                  active={purpose === p}
+                  onClick={() => setPurpose(p)}
                 >
                   {p}
                 </Chip>
@@ -351,7 +336,7 @@ export default function RecommendInputPage() {
         </div>
 
         {/* 하단 다음 버튼 */}
-        <div className="sticky bottom-0 z-10 bg-white border-t px-5 py-4">
+        <div className="sticky bottom-0 z-10 bg-white px-5 py-4">
           <button
             type="button"
             disabled={!isValid}

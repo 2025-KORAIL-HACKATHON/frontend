@@ -30,13 +30,12 @@ export default function TravelPage() {
   const hasProfile = profile !== null;
   const profileOk = hasProfile;
 
-  const openModal = () => {
-    // 프로필 있으면 모달 없이 바로 이동
+  // 프로필 없으면 모달 / 있으면 원하는 곳으로 이동
+  const openModalOrGo = (whenHasProfile: () => void) => {
     if (profileOk) {
-      router.push("/travel/recommend/input");
+      whenHasProfile();
       return;
     }
-    // 프로필 없으면 모달 표시
     setOpenReq(true);
   };
 
@@ -109,12 +108,16 @@ export default function TravelPage() {
               <br />
               국내 여행지 코스를 추천받아 보세요
             </div>
+
+            {/* ko-trip: 프로필 없으면 모달 / 있으면 /travel/ko-trip */}
             <button
               type="button"
-              onClick={openModal}
+              onClick={() =>
+                openModalOrGo(() => router.push("/travel/ko-trip"))
+              }
               className="cursor-pointer rounded-full bg-white/90 px-3 py-2 text-xs font-semibold text-neutral-900 shadow"
             >
-              ko-mate 시작하기
+              ko-trip 시작하기
             </button>
           </div>
 
@@ -143,12 +146,15 @@ export default function TravelPage() {
               <div className="text-lg font-black">여행 메이트 구하기</div>
             </div>
 
+            {/* ✅ ko-mate: 프로필 없으면 모달 / 있으면 /travel/recommend/input */}
             <button
               type="button"
-              onClick={() => router.push("/travel/ko-trip")}
+              onClick={() =>
+                openModalOrGo(() => router.push("/travel/recommend/input"))
+              }
               className="cursor-pointer rounded-full bg-white/90 px-3 py-2 text-xs font-semibold text-neutral-900 shadow"
             >
-              ko-trip 시작하기
+              ko-mate 시작하기
             </button>
           </div>
 

@@ -24,17 +24,18 @@ export default function ChatListPage() {
   return (
     <MobileFrame showTopBar={false} showBottomBar={false}>
       <div className="h-full bg-white">
-        <header className="px-4 pt-3 pb-4">
+        {/* 고정 헤더 */}
+        <header className="h-14 shrink-0 grid grid-cols-3 items-center px-4 bg-white shadow-[0_1px_0_rgba(0,0,0,0.06)]">
           <button
             type="button"
             onClick={() => router.back()}
-            className="cursor-pointer p-2 -ml-2"
+            className="cursor-pointer justify-self-start text-xl leading-none"
             aria-label="뒤로가기"
           >
-            <IconBack />
+            ‹
           </button>
-
-          <div className="mt-3 text-lg font-black">채팅 목록</div>
+          <div className="justify-self-center font-bold">채팅 목록</div>
+          <div className="justify-self-end w-6" />
         </header>
 
         <div className="px-6 pb-6">

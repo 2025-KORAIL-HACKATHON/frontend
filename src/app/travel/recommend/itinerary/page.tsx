@@ -42,8 +42,8 @@ function DayChip({
       type="button"
       onClick={onClick}
       className={[
-        "h-10 px-5 rounded-full border text-sm",
-        active ? "border-black font-bold text-black" : "text-neutral-500",
+        "h-10 px-5 rounded-full border text-sm cursor-pointer",
+        active ? "border-sky-500 font-bold text-sky-500" : "text-neutral-500",
       ].join(" ")}
     >
       {children}
@@ -333,7 +333,7 @@ export default function ItineraryPage() {
       {/* 전체는 잠그고 내부만 스크롤 */}
       <div className="h-full flex flex-col bg-white overflow-hidden">
         {/* 고정 헤더 */}
-        <header className="h-14 shrink-0 grid grid-cols-3 items-center px-4 border-b bg-white">
+        <header className="h-14 shrink-0 grid grid-cols-3 items-center px-4 bg-white">
           <button
             type="button"
             onClick={() => router.back()}
@@ -430,7 +430,7 @@ export default function ItineraryPage() {
             <button
               type="button"
               onClick={() => router.push("/travel")}
-              className="w-full h-12 rounded-2xl bg-black text-white font-bold"
+              className="cursor-pointer w-full h-12 rounded-2xl bg-sky-500 text-white font-bold"
             >
               여행상품·패스로 돌아가기
             </button>

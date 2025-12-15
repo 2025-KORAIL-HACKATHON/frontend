@@ -120,7 +120,7 @@ export default function TravelProfilePage() {
           <button
             type="button"
             onClick={() => router.back()}
-            className="justify-self-start text-xl leading-none"
+            className="cursor-pointer justify-self-start text-xl leading-none"
             aria-label="뒤로가기"
           >
             ‹
@@ -371,7 +371,7 @@ export default function TravelProfilePage() {
           <button
             type="button"
             onClick={onSave}
-            className="w-full h-14 rounded-2xl bg-sky-500 text-white font-bold text-base"
+            className="cursor-pointer w-full h-14 rounded-2xl bg-sky-500 text-white font-bold text-base"
           >
             저장
           </button>

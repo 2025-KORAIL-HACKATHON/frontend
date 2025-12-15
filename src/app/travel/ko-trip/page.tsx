@@ -10,6 +10,7 @@ import {
   KO_MATE_INPUT_KEY,
   KO_TRIP_CREATED_KEY,
 } from "@/lib/koTripStorage";
+import Modal from "@/components/common/Modal";
 
 function IconBack() {
   return (
@@ -43,31 +44,29 @@ function NeedInfoModal({
         onClick={onClose}
         aria-hidden
       />
-      <div className="absolute inset-0 flex items-center justify-center px-6">
-        <div className="w-full max-w-sm rounded-2xl bg-white px-6 py-5 shadow-[0_20px_50px_rgba(0,0,0,0.25)]">
-          <div className="flex items-center gap-3">
-            <Image
-              src="/icons/warn.svg"
-              alt="경고"
-              width={18}
-              height={18}
-              className="shrink-0"
-              priority
-            />
-            <div className="text-sm font-semibold text-neutral-800">
-              아직 여행 정보를 생성하지 않았습니다.
-            </div>
+      <Modal open={open} onClose={onClose}>
+        <div className="flex items-center gap-3">
+          <Image
+            src="/icons/warn.svg"
+            alt="경고"
+            width={18}
+            height={18}
+            className="shrink-0"
+            priority
+          />
+          <div className="text-sm font-semibold text-neutral-800">
+            아직 여행 정보를 생성하지 않았습니다.
           </div>
-
-          <button
-            type="button"
-            onClick={onGoInput}
-            className="cursor-pointer mt-4 w-full h-10 rounded-full bg-black text-white text-sm font-bold"
-          >
-            입력 바로가기
-          </button>
         </div>
-      </div>
+
+        <button
+          type="button"
+          onClick={onGoInput}
+          className="cursor-pointer mt-4 w-full h-10 rounded-full bg-black text-white text-sm font-bold"
+        >
+          입력 바로가기
+        </button>
+      </Modal>
     </div>
   );
 }
