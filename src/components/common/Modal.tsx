@@ -18,7 +18,7 @@ export default function Modal({
   if (!open) return null;
 
   return (
-    <div className="fixed inset-0 z-1000 flex items-start justify-center">
+    <div className="fixed inset-0 z-1000 flex items-center justify-center">
       {/* overlay */}
       <button
         type="button"

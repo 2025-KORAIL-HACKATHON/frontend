@@ -81,41 +81,11 @@ export default function MateRequirementModal({
 
   return (
     <Modal open={open} onClose={onClose}>
-      <div className="text-2xl font-black leading-snug">
-        What is essential
-        <br />
-        for 여행메이트 ...
-      </div>
-
-      <div className="mt-6 space-y-3">
-        <RequirementRow
-          icon="📍"
-          titleKo="승차권 구매 이력"
-          titleEn="Purchase History"
-          done={purchaseOk}
-          onClick={onGoPurchase}
-        />
-        <RequirementRow
-          icon="🔳"
-          titleKo="본인인증 완료자"
-          titleEn="Certified user"
-          done={certifiedOk}
-          onClick={onGoVerify}
-        />
-        <RequirementRow
-          icon="👤"
-          titleKo="여행 프로필 생성"
-          titleEn="Create Profile"
-          done={profileOk}
-          onClick={onGoProfile}
-        />
-      </div>
-
       <div className="mt-6 flex items-center justify-center text-sm">
         <span className="font-semibold">
           {allDone
             ? "모든 단계를 완료하셨습니다!"
-            : "필수 단계를 완료해주세요!"}
+            : "아직 여행 프로필을 생성하지 않았습니다!"}
         </span>
       </div>
 

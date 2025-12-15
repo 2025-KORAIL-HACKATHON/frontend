@@ -6,12 +6,6 @@ export type RecommendInput = {
   region2: string; // 예: 강남/해운대 (선택)
   period: "당일" | "1박2일" | "2박3일" | "3박4일" | "4박이상";
   purposes: string[]; // 다중
-  budget:
-    | "10만원 이하"
-    | "10~30만원"
-    | "30~50만원"
-    | "50~100만원"
-    | "100만원 이상";
   intensity: "여유" | "중간" | "강행군";
   people: "혼자서" | "단둘이" | "3명 이상";
 };

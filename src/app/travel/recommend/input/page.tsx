@@ -36,13 +36,6 @@ const PERIODS: RecommendInput["period"][] = [
   "3박4일",
   "4박이상",
 ];
-const BUDGETS: RecommendInput["budget"][] = [
-  "10만원 이하",
-  "10~30만원",
-  "30~50만원",
-  "50~100만원",
-  "100만원 이상",
-];
 const INTENSITY: RecommendInput["intensity"][] = ["여유", "중간", "강행군"];
 const PEOPLE: RecommendInput["people"][] = ["혼자서", "단둘이", "3명 이상"];
 
@@ -80,7 +73,6 @@ export default function RecommendInputPage() {
   const [region2, setRegion2] = useState("");
   const [period, setPeriod] = useState<RecommendInput["period"] | "">("");
   const [purposes, setPurposes] = useState<string[]>([]);
-  const [budget, setBudget] = useState<RecommendInput["budget"] | "">("");
   const [intensity, setIntensity] = useState<RecommendInput["intensity"] | "">(
     ""
   );
@@ -92,11 +84,10 @@ export default function RecommendInputPage() {
       !!region1 &&
       !!period &&
       purposes.length > 0 &&
-      !!budget &&
       !!intensity &&
       !!people
     );
-  }, [travelType, region1, period, purposes, budget, intensity, people]);
+  }, [travelType, region1, period, purposes, intensity, people]);
 
   const togglePurpose = (p: string) => {
     setPurposes((prev) =>
@@ -113,7 +104,6 @@ export default function RecommendInputPage() {
       region2,
       period: period as RecommendInput["period"],
       purposes,
-      budget: budget as RecommendInput["budget"],
       intensity: intensity as RecommendInput["intensity"],
       people: people as RecommendInput["people"],
     };
@@ -125,19 +115,26 @@ export default function RecommendInputPage() {
   return (
     <MobileFrame showTopBar={false} showBottomBar={false}>
       <div className="h-full flex flex-col bg-white">
-        <header className="h-14 shrink-0 flex items-center gap-3 px-4 border-b">
+        {/* 고정 헤더 */}
+        <header className="h-14 shrink-0 grid grid-cols-3 items-center px-4 border-b bg-white">
+          {/* left */}
           <button
+            type="button"
             onClick={() => router.back()}
-            className="cursor-pointer text-sm"
+            className="justify-self-start text-sm cursor-pointer"
+            aria-label="뒤로가기"
           >
             ←
           </button>
-          <div className="flex font-bold items-center justify-center">
-            정보 입력
-          </div>
+
+          {/* center */}
+          <div className="justify-self-center font-bold">정보 입력</div>
+
+          {/* right (빈 공간: 중앙 정렬 고정용) */}
+          <div className="justify-self-end w-6" />
         </header>
 
-        <div className="flex-1 min-h-0 overflow-y-auto px-5 py-6 pb-24">
+        <div className="flex-1 min-h-0 overflow-y-auto px-5 py-6 pb-6">
           <div className="text-lg font-bold">여행 관련 정보</div>
 
           {/* 여행 유형 (상단 추가) */}
@@ -219,22 +216,6 @@ export default function RecommendInputPage() {
                   onClick={() => togglePurpose(p)}
                 >
                   {p}
-                </Chip>
-              ))}
-            </div>
-          </div>
-
-          {/* 예산 */}
-          <div className="mt-6">
-            <div className="text-sm font-semibold mb-2">여행 예산</div>
-            <div className="flex flex-wrap gap-2">
-              {BUDGETS.map((b) => (
-                <Chip
-                  key={b}
-                  active={budget === b}
-                  onClick={() => setBudget(b)}
-                >
-                  {b}
                 </Chip>
               ))}
             </div>

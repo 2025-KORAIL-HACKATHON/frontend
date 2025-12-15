@@ -58,19 +58,26 @@ export default function TravelProfilePage() {
   };
 
   return (
-    <MobileFrame>
+    <MobileFrame showBottomBar={false} showTopBar={false}>
       {/* 페이지 내부에서 "헤더 고정 + 본문만 스크롤" */}
       <div className="h-full flex flex-col bg-white">
         {/* 고정 헤더 */}
-        <header className="h-14 shrink-0 flex items-center gap-3 px-4 border-b bg-white">
+        <header className="h-14 shrink-0 grid grid-cols-3 items-center px-4 border-b bg-white">
+          {/* left */}
           <button
             type="button"
             onClick={() => router.back()}
-            className="text-sm cursor-pointer"
+            className="justify-self-start text-sm cursor-pointer"
+            aria-label="뒤로가기"
           >
             ←
           </button>
-          <div className="font-bold">여행 프로필 설정</div>
+
+          {/* center */}
+          <div className="justify-self-center font-bold">여행 프로필 설정</div>
+
+          {/* right (빈 공간: 중앙 정렬 고정용) */}
+          <div className="justify-self-end w-6" />
         </header>
 
         {/* 본문만 스크롤 */}

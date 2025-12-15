@@ -56,107 +56,126 @@ export default function PackageResultPage() {
 
   return (
     <MobileFrame showTopBar={false} showBottomBar={false}>
-      <div className="h-full flex flex-col bg-white">
-        <header className="h-14 shrink-0 flex items-center gap-3 px-4 border-b">
-          <button onClick={() => router.back()} className="text-sm">
+      {/* 전체 overflow-hidden으로 잠금 */}
+      <div className="h-full flex flex-col bg-white overflow-hidden">
+        {/* 고정 헤더 */}
+        <header className="h-14 shrink-0 grid grid-cols-3 items-center px-4 border-b bg-white">
+          <button
+            type="button"
+            onClick={() => router.back()}
+            className="justify-self-start text-sm cursor-pointer"
+            aria-label="뒤로가기"
+          >
             ←
           </button>
-          <div className="font-bold">패키지 추천 리스트</div>
+
+          <div className="justify-self-center font-bold">
+            패키지 추천 리스트
+          </div>
+
+          <div className="justify-self-end w-6" />
         </header>
 
-        <div className="flex-1 min-h-0 overflow-y-auto px-5 py-6 pb-24">
-          <div className="font-bold text-lg">
-            {input.region1} · {input.period}
-          </div>
-          <div className="mt-1 text-sm text-neutral-500">
-            목적: {input.purposes.join(", ")}
-          </div>
-
-          {/* 필터/정렬 */}
-          <div className="mt-6 grid grid-cols-2 gap-3">
-            <select
-              className="h-11 rounded-xl border px-3 text-sm"
-              value={filterPurpose}
-              onChange={(e) => {
-                setFilterPurpose(e.target.value);
-                setPage(1);
-              }}
-            >
-              {purposes.map((p) => (
-                <option key={p} value={p}>
-                  {p === "ALL" ? "목적 전체" : p}
-                </option>
-              ))}
-            </select>
-
-            <select
-              className="h-11 rounded-xl border px-3 text-sm"
-              value={sortKey}
-              onChange={(e) => setSortKey(e.target.value as any)}
-            >
-              <option value="RELEVANCE">관련도순</option>
-              <option value="PRICE_LOW">가격 낮은순</option>
-            </select>
-          </div>
-
-          {/* 리스트 */}
-          <div className="mt-6 space-y-3">
-            {pageItems.length === 0 ? (
-              <div className="rounded-2xl border p-4 text-sm text-neutral-600">
-                조건에 맞는 패키지 상품이 없어요.
-              </div>
-            ) : (
-              pageItems.map((p) => (
-                <div key={p.id} className="rounded-2xl border p-4">
-                  <div className="text-xs text-neutral-500">
-                    {p.region} · {p.period} · {p.provider}
-                  </div>
-                  <div className="mt-1 font-bold">{p.title}</div>
-                  <div className="mt-2 flex flex-wrap gap-2">
-                    {p.purposes.map((x) => (
-                      <span
-                        key={x}
-                        className="text-xs px-2 py-1 rounded-full bg-neutral-100"
-                      >
-                        {x}
-                      </span>
-                    ))}
-                  </div>
-                  <div className="mt-3 font-bold">
-                    {p.price.toLocaleString()}원
-                  </div>
-                </div>
-              ))
-            )}
-          </div>
-
-          {/* 페이지네이션 */}
-          <div className="mt-6 flex items-center justify-center gap-2">
-            <button
-              className="h-10 px-3 rounded-xl border text-sm disabled:opacity-40"
-              disabled={safePage <= 1}
-              onClick={() => setPage((p) => Math.max(1, p - 1))}
-            >
-              이전
-            </button>
-            <div className="text-sm font-semibold">
-              {safePage} / {totalPages}
+        {/* 본문 + 하단 버튼 레이아웃 */}
+        <div className="flex-1 min-h-0 flex flex-col">
+          {/* 본문만 스크롤 */}
+          <div className="flex-1 min-h-0 overflow-y-auto px-5 py-6 pb-24">
+            <div className="font-bold text-lg">
+              {input.region1} · {input.period}
             </div>
-            <button
-              className="cursor-pointer h-10 px-3 rounded-xl border text-sm disabled:opacity-40"
-              disabled={safePage >= totalPages}
-              onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
-            >
-              다음
-            </button>
+            <div className="mt-1 text-sm text-neutral-500">
+              목적: {input.purposes.join(", ")}
+            </div>
+
+            {/* 필터/정렬 */}
+            <div className="mt-6 grid grid-cols-2 gap-3">
+              <select
+                className="h-11 rounded-xl border px-3 text-sm"
+                value={filterPurpose}
+                onChange={(e) => {
+                  setFilterPurpose(e.target.value);
+                  setPage(1);
+                }}
+              >
+                {purposes.map((p) => (
+                  <option key={p} value={p}>
+                    {p === "ALL" ? "목적 전체" : p}
+                  </option>
+                ))}
+              </select>
+
+              <select
+                className="h-11 rounded-xl border px-3 text-sm"
+                value={sortKey}
+                onChange={(e) => setSortKey(e.target.value as any)}
+              >
+                <option value="RELEVANCE">관련도순</option>
+                <option value="PRICE_LOW">가격 낮은순</option>
+              </select>
+            </div>
+
+            {/* 리스트 */}
+            <div className="mt-6 space-y-3">
+              {pageItems.length === 0 ? (
+                <div className="rounded-2xl border p-4 text-sm text-neutral-600">
+                  조건에 맞는 패키지 상품이 없어요.
+                </div>
+              ) : (
+                pageItems.map((p) => (
+                  <div key={p.id} className="rounded-2xl border p-4">
+                    <div className="text-xs text-neutral-500">
+                      {p.region} · {p.period} · {p.provider}
+                    </div>
+                    <div className="mt-1 font-bold">{p.title}</div>
+                    <div className="mt-2 flex flex-wrap gap-2">
+                      {p.purposes.map((x) => (
+                        <span
+                          key={x}
+                          className="text-xs px-2 py-1 rounded-full bg-neutral-100"
+                        >
+                          {x}
+                        </span>
+                      ))}
+                    </div>
+                    <div className="mt-3 font-bold">
+                      {p.price.toLocaleString()}원
+                    </div>
+                  </div>
+                ))
+              )}
+            </div>
+
+            {/* 페이지네이션 */}
+            <div className="mt-6 flex items-center justify-center gap-2">
+              <button
+                className="h-10 px-3 rounded-xl border text-sm disabled:opacity-40"
+                disabled={safePage <= 1}
+                onClick={() => setPage((p) => Math.max(1, p - 1))}
+              >
+                이전
+              </button>
+              <div className="text-sm font-semibold">
+                {safePage} / {totalPages}
+              </div>
+              <button
+                className="cursor-pointer h-10 px-3 rounded-xl border text-sm disabled:opacity-40"
+                disabled={safePage >= totalPages}
+                onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
+              >
+                다음
+              </button>
+            </div>
           </div>
 
-          <button
-            onClick={() => router.push("/travel")}
-            className="mt-8 w-full h-12 rounded-2xl bg-black text-white font-bold"
-          >
-            여행상품·패스로 돌아가기
-          </button>
+          {/* 하단 고정 버튼 */}
+          <div className="shrink-0 px-5 pb-5 pt-3 bg-white border-t">
+            <button
+              onClick={() => router.push("/travel")}
+              className="w-full h-12 rounded-2xl bg-black text-white font-bold"
+            >
+              여행상품·패스로 돌아가기
+            </button>
+          </div>
         </div>
       </div>
     </MobileFrame>
