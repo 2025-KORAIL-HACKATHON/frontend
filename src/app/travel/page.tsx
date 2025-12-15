@@ -11,7 +11,7 @@ import { TravelProfile } from "@/types/profile";
 function Avatar({ seed }: { seed: string }) {
   const initials = seed?.slice(0, 1).toUpperCase() || "";
   return (
-    <div className="h-10 w-10 rounded-full bg-neutral-200 flex items-center justify-center text-sm font-bold text-neutral-700">
+    <div className="h-16 w-16 rounded-full bg-neutral-200 flex items-center justify-center text-sm font-bold text-neutral-700">
       {initials}
     </div>
   );
@@ -74,7 +74,7 @@ export default function TravelPage() {
           </div>
 
           <div className="absolute right-4 top-14 flex flex-col items-center gap-2">
-            <div>
+            <div className="h-16">
               {hasProfile ? (
                 <div className="relative h-10 w-10 overflow-hidden rounded-full border border-white/40">
                   <Image
