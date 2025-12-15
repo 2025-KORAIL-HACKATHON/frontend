@@ -56,7 +56,7 @@ function formatWon(n: number) {
 }
 
 function TimelineNumber({ n }: { n: number }) {
-  // ✅ 1부터 보이도록
+  // 1부터 보이도록
   return (
     <div className="h-10 w-10 rounded-full bg-sky-500 text-white flex items-center justify-center font-bold">
       {n}
@@ -64,7 +64,7 @@ function TimelineNumber({ n }: { n: number }) {
   );
 }
 
-/** ✅ 들어올 때마다 다시 재생되는 Shine */
+/** 들어올 때마다 다시 재생되는 Shine */
 function ShineOverlay({ playId }: { playId: number }) {
   return (
     <div
@@ -72,7 +72,7 @@ function ShineOverlay({ playId }: { playId: number }) {
       className="pointer-events-none absolute inset-0 overflow-hidden rounded-2xl"
     >
       <div
-        key={playId} // ✅ key 변화로 애니메이션 재시작
+        key={playId} //  key 변화로 애니메이션 재시작
         className={[
           "absolute -inset-y-6 -left-1/2 w-[200%]",
           "bg-linear-to-r from-transparent via-sky-200/40 to-transparent",
@@ -85,7 +85,7 @@ function ShineOverlay({ playId }: { playId: number }) {
 }
 
 /**
- * ✅ 카드 공통:
+ *  카드 공통:
  * - viewport 진입할 때마다 shine playId++
  * - fade-up(등장)은 최초 1회만 (스크롤 업/다운 때 다시 숨지 않게)
  */
@@ -234,7 +234,7 @@ export default function ItineraryPage() {
 
   const city = input.region1 || "강릉";
 
-  // ✅ 더미 승차권(가는/오는)
+  //  더미 승차권(가는/오는)
   const goTicket: Ticket = {
     trainNo: "KTX-이음 809",
     departTime: "09:55",
@@ -256,7 +256,7 @@ export default function ItineraryPage() {
     badgeText: "M 5% 적립",
   };
 
-  // ✅ 더미 일정(마지막날에 “오는 승차권” 추가)
+  //  더미 일정(마지막날에 “오는 승차권” 추가)
   const days: DayPlan[] = useMemo(() => {
     const base: DayPlan[] = [
       {
@@ -313,7 +313,7 @@ export default function ItineraryPage() {
             title: "기념품 쇼핑",
             desc: "로컬샵 / 시장에서 쇼핑",
           },
-          // ✅ 마지막날 “오는 승차권”
+          //  마지막날 “오는 승차권”
           {
             kind: "TICKET",
             title: "오는 승차권 맞춤 추천",
@@ -383,7 +383,7 @@ export default function ItineraryPage() {
             </div>
           </div>
 
-          {/* ✅ 리스트만 내부 스크롤 + 스크롤바 숨김 */}
+          {/*  리스트만 내부 스크롤 + 스크롤바 숨김 */}
           <div
             className={[
               "flex-1 min-h-0 overflow-y-auto px-5 py-6",

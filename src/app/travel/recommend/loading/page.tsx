@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import MobileFrame from "@/components/mobile/MobileFrame";
 import { useRecommendStore } from "@/stores/recommendStore";
@@ -12,7 +12,7 @@ function periodToDays(period: string) {
   if (period === "1박2일") return 2;
   if (period === "2박3일") return 3;
   if (period === "3박4일") return 4;
-  return 5; // 4박이상은 5일로 보여주기(샘플)
+  return 5;
 }
 
 function makeItinerary(
@@ -50,6 +50,8 @@ export default function RecommendLoadingPage() {
   const { input, setItinerary, setMatchedPackages } = useRecommendStore();
   const [progress, setProgress] = useState(0);
 
+  const videoRef = useRef<HTMLVideoElement | null>(null);
+
   const safeInput = useMemo(() => input, [input]);
 
   useEffect(() => {
@@ -65,17 +67,32 @@ export default function RecommendLoadingPage() {
     return () => clearInterval(id);
   }, [safeInput, router]);
 
+  // ✅ progress에 따라 영상 재생/정지 제어
+  useEffect(() => {
+    const v = videoRef.current;
+    if (!v) return;
+
+    if (progress < 100) {
+      // 자동재생 정책 대응: muted + playsInline 필요
+      v.loop = true;
+      const playPromise = v.play();
+      // safari/모바일에서 play()가 reject 될 수 있어 무시 처리
+      if (playPromise) playPromise.catch(() => {});
+    } else {
+      v.pause();
+      v.currentTime = 0; // 끝나면 첫 프레임으로
+    }
+  }, [progress]);
+
   useEffect(() => {
     if (!safeInput) return;
     if (progress !== 100) return;
 
-    // 결과 계산/저장
     if (safeInput.travelType === "FREE") {
       const days = periodToDays(safeInput.period);
       const plan = makeItinerary(days, safeInput.region1, safeInput.purposes);
       setItinerary(plan);
     } else {
-      // 간단 매칭 점수
       const matched = ALL_PACKAGES.map((p) => {
         let score = 0;
         if (p.region === safeInput.region1) score += 3;
@@ -114,7 +131,19 @@ export default function RecommendLoadingPage() {
           기다려주세요!
         </p>
 
-        <div className="mt-10 h-64 rounded-3xl bg-sky-100" />
+        {/* ✅ 기존 박스에 mp4 삽입 */}
+        <div className="mt-10 h-64 rounded-3xl bg-sky-100 overflow-hidden">
+          <video
+            ref={videoRef}
+            className="h-full w-full object-cover"
+            src="/videos/recommend-loading.mp4"
+            muted
+            playsInline
+            autoPlay
+            loop
+            preload="auto"
+          />
+        </div>
 
         <div className="mt-8 text-center font-bold">{progress}%</div>
         <div className="mt-2 h-2 rounded-full bg-neutral-200">
