@@ -1,6 +1,7 @@
 "use client";
 
 import Modal from "@/components/common/Modal";
+import { useRouter } from "next/navigation";
 
 function RequirementRow({
   icon,
@@ -57,10 +58,6 @@ interface Props {
   onClose: () => void;
   profileOk: boolean;
 
-  onGoPurchase: () => void;
-  onGoVerify: () => void;
-  onGoProfile: () => void;
-
   onConfirm: () => void;
 }
 
@@ -68,13 +65,10 @@ export default function MateRequirementModal({
   open,
   onClose,
   profileOk,
-  onGoPurchase,
-  onGoVerify,
-  onGoProfile,
   onConfirm,
 }: Props) {
   const allDone = profileOk;
-
+  const router = useRouter();
   const InfoIcon = ({ done }: { done: boolean }) => (
     <svg
       width="18"
@@ -131,17 +125,19 @@ export default function MateRequirementModal({
 
       <button
         type="button"
-        disabled={!allDone}
         onClick={() => {
-          if (!allDone) return;
+          if (!allDone) {
+            router.push("/travel/profile");
+            onClose();
+            return;
+          }
+
+          router.push("/travel/recommend/input");
           onClose();
           onConfirm();
         }}
         className={[
-          "cursor-pointer mt-6 w-full h-12 rounded-full font-bold",
-          allDone
-            ? "bg-black text-white"
-            : "bg-neutral-200 text-neutral-500 cursor-not-allowed",
+          "cursor-pointer mt-6 w-full h-12 rounded-full font-bol bg-black text-white",
         ].join(" ")}
       >
         확인

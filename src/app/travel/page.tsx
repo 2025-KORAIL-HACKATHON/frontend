@@ -18,7 +18,7 @@ function getBool(key: string) {
 }
 
 function Avatar({ seed }: { seed: string }) {
-  const initials = seed?.slice(0, 1).toUpperCase() || "K";
+  const initials = seed?.slice(0, 1).toUpperCase() || "";
   return (
     <div className="h-10 w-10 rounded-full bg-neutral-200 flex items-center justify-center text-sm font-bold text-neutral-700">
       {initials}
@@ -31,7 +31,7 @@ export default function TravelPage() {
   const { profile, ready } = useTravelProfile();
 
   const [openReq, setOpenReq] = useState(false);
-  const seed = (profile as TravelProfile | null)?.avatarSeed ?? "K";
+  const seed = (profile as TravelProfile | null)?.avatarSeed ?? "";
 
   if (!ready) return null;
 
@@ -49,9 +49,6 @@ export default function TravelPage() {
         open={openReq}
         onClose={() => setOpenReq(false)}
         profileOk={profileOk}
-        onGoPurchase={() => router.push("/ticket")}
-        onGoVerify={() => router.push("/auth/verify")}
-        onGoProfile={() => router.push("/travel/profile")}
         onConfirm={() => router.push("/travel/recommend/input")}
       />
 
@@ -80,7 +77,7 @@ export default function TravelPage() {
           </div>
 
           <div className="absolute right-4 top-14 flex flex-col items-center gap-2">
-            {/* ✅ 아바타/이미지 분기 */}
+            {/* 아바타/이미지 분기 */}
             <div>
               {hasProfile ? (
                 <div className="relative h-10 w-10 overflow-hidden rounded-full border border-white/40">
@@ -132,7 +129,7 @@ export default function TravelPage() {
           </div>
         </section>
 
-        <section className="px-5 pb-24">
+        <section className="px-5 pb-6">
           <div className="flex items-center justify-between">
             <div className="text-lg font-black">
               당신에게 딱 맞는

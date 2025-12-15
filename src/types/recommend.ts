@@ -8,6 +8,8 @@ export type RecommendInput = {
   purposes: string[]; // 다중
   intensity: "여유" | "중간" | "강행군";
   people: "혼자서" | "단둘이" | "3명 이상";
+  startDate: string; // YYYY-MM-DD
+  endDate: string; // YYYY-MM-DD
 };
 
 export type ItineraryItem = {
