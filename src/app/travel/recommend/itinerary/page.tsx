@@ -243,7 +243,6 @@ export default function ItineraryPage() {
     to: city,
     price: 27600,
     badgeText: "M 5% 적립",
-    statusText: "매진",
   };
 
   const backTicket: Ticket = {

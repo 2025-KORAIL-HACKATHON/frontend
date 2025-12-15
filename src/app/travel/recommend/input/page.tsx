@@ -83,9 +83,15 @@ export default function RecommendInputPage() {
 
   const [travelType, setTravelType] = useState<TravelType>("FREE");
 
-  const [provinceCode, setProvinceCode] = useState("");
-  const [districtCode, setDistrictCode] = useState("");
+  // ✅ 출발지
+  const [fromProvinceCode, setFromProvinceCode] = useState("");
+  const [fromDistrictCode, setFromDistrictCode] = useState("");
 
+  // ✅ 도착지
+  const [toProvinceCode, setToProvinceCode] = useState("");
+  const [toDistrictCode, setToDistrictCode] = useState("");
+
+  // 여행 목적(단일)
   const [purpose, setPurpose] = useState<string>("");
 
   const [period, setPeriod] = useState<RecommendInput["period"] | "">("");
@@ -94,21 +100,39 @@ export default function RecommendInputPage() {
   );
   const [people, setPeople] = useState<RecommendInput["people"] | "">("");
 
+  // 달력(날짜)
   const [startDate, setStartDate] = useState<string>("");
   const [endDate, setEndDate] = useState<string>("");
 
-  const districtsOfProvince = useMemo(() => {
-    if (!provinceCode) return [];
-    return DISTRICTS.filter((d) => d.provinceCode === provinceCode);
-  }, [provinceCode]);
+  // 출발지 구/군/구
+  const fromDistricts = useMemo(() => {
+    if (!fromProvinceCode) return [];
+    return DISTRICTS.filter((d) => d.provinceCode === fromProvinceCode);
+  }, [fromProvinceCode]);
 
-  const provinceName = useMemo(() => {
-    return PROVINCES.find((p) => p.code === provinceCode)?.name ?? "";
-  }, [provinceCode]);
+  // 도착지 구/군/구
+  const toDistricts = useMemo(() => {
+    if (!toProvinceCode) return [];
+    return DISTRICTS.filter((d) => d.provinceCode === toProvinceCode);
+  }, [toProvinceCode]);
 
-  const districtName = useMemo(() => {
-    return districtsOfProvince.find((d) => d.code === districtCode)?.name ?? "";
-  }, [districtCode, districtsOfProvince]);
+  // 출발지 이름
+  const fromProvinceName = useMemo(() => {
+    return PROVINCES.find((p) => p.code === fromProvinceCode)?.name ?? "";
+  }, [fromProvinceCode]);
+
+  const fromDistrictName = useMemo(() => {
+    return fromDistricts.find((d) => d.code === fromDistrictCode)?.name ?? "";
+  }, [fromDistrictCode, fromDistricts]);
+
+  // 도착지 이름
+  const toProvinceName = useMemo(() => {
+    return PROVINCES.find((p) => p.code === toProvinceCode)?.name ?? "";
+  }, [toProvinceCode]);
+
+  const toDistrictName = useMemo(() => {
+    return toDistricts.find((d) => d.code === toDistrictCode)?.name ?? "";
+  }, [toDistrictCode, toDistricts]);
 
   const onChangeStart = (v: string) => {
     setStartDate(v);
@@ -131,8 +155,10 @@ export default function RecommendInputPage() {
   const isValid = useMemo(() => {
     return (
       !!travelType &&
-      !!provinceCode &&
-      !!districtCode &&
+      !!fromProvinceCode &&
+      !!fromDistrictCode &&
+      !!toProvinceCode &&
+      !!toDistrictCode &&
       !!startDate &&
       !!endDate &&
       !!period &&
@@ -142,8 +168,10 @@ export default function RecommendInputPage() {
     );
   }, [
     travelType,
-    provinceCode,
-    districtCode,
+    fromProvinceCode,
+    fromDistrictCode,
+    toProvinceCode,
+    toDistrictCode,
     startDate,
     endDate,
     period,
@@ -155,10 +183,11 @@ export default function RecommendInputPage() {
   const onNext = () => {
     if (!isValid) return;
 
+    // ✅ 기존 타입을 유지한다면: region1/region2를 출발/도착으로 사용
     const payload: RecommendInput = {
       travelType,
-      region1: provinceName,
-      region2: districtName,
+      region1: `${fromProvinceName} ${fromDistrictName}`.trim(), // 출발지
+      region2: `${toProvinceName} ${toDistrictName}`.trim(), // 도착지
       period: period as RecommendInput["period"],
       purposes: [purpose],
       intensity: intensity as RecommendInput["intensity"],
@@ -176,7 +205,6 @@ export default function RecommendInputPage() {
       <div className="h-full flex flex-col bg-white">
         {/* 고정 헤더 */}
         <header className="shrink-0 bg-white">
-          {/* 상단 네비(뒤로/제목) */}
           <div className="h-14 grid grid-cols-3 items-center px-4">
             <button
               type="button"
@@ -193,14 +221,13 @@ export default function RecommendInputPage() {
 
         {/* 본문 스크롤 */}
         <div className="flex-1 min-h-0 overflow-y-auto px-5 pb-6">
-          {/* 추가: 이미지처럼 "왼쪽 문구 + 가운데 svg" */}
+          {/* 로고 */}
           <div className="px-5 pb-4">
             <div className="relative h-10">
-              {/* 가운데 SVG */}
               <div className="absolute left-1/2 top-0 -translate-x-1/2">
                 <Image
                   src="/icons/kotrip.svg"
-                  alt="ko mate"
+                  alt="ko trip"
                   width={120}
                   height={24}
                   priority
@@ -208,6 +235,7 @@ export default function RecommendInputPage() {
               </div>
             </div>
           </div>
+
           <div className="text-lg font-bold pt-4">여행 관련 정보</div>
 
           {/* 여행 유형 */}
@@ -256,16 +284,16 @@ export default function RecommendInputPage() {
             </div>
           </div>
 
-          {/* 지역 */}
+          {/* ✅ 출발지 */}
           <div className="mt-6">
-            <div className="text-sm font-semibold mb-2">여행 지역</div>
+            <div className="text-sm font-semibold mb-2">출발지</div>
             <div className="grid grid-cols-2 gap-3">
               <select
                 className="h-11 rounded-xl border px-3 cursor-pointer text-sm"
-                value={provinceCode}
+                value={fromProvinceCode}
                 onChange={(e) => {
-                  setProvinceCode(e.target.value);
-                  setDistrictCode("");
+                  setFromProvinceCode(e.target.value);
+                  setFromDistrictCode("");
                 }}
               >
                 <option value="">시/도 선택</option>
@@ -278,14 +306,52 @@ export default function RecommendInputPage() {
 
               <select
                 className="h-11 rounded-xl border px-3 cursor-pointer text-sm"
-                value={districtCode}
-                onChange={(e) => setDistrictCode(e.target.value)}
-                disabled={!provinceCode}
+                value={fromDistrictCode}
+                onChange={(e) => setFromDistrictCode(e.target.value)}
+                disabled={!fromProvinceCode}
               >
                 <option value="">
-                  {provinceCode ? "시/군/구 선택" : "시/도를 먼저 선택"}
+                  {fromProvinceCode ? "시/군/구 선택" : "시/도를 먼저 선택"}
                 </option>
-                {districtsOfProvince.map((d) => (
+                {fromDistricts.map((d) => (
+                  <option key={d.code} value={d.code}>
+                    {d.name}
+                  </option>
+                ))}
+              </select>
+            </div>
+          </div>
+
+          {/* ✅ 도착지 */}
+          <div className="mt-6">
+            <div className="text-sm font-semibold mb-2">도착지</div>
+            <div className="grid grid-cols-2 gap-3">
+              <select
+                className="h-11 rounded-xl border px-3 cursor-pointer text-sm"
+                value={toProvinceCode}
+                onChange={(e) => {
+                  setToProvinceCode(e.target.value);
+                  setToDistrictCode("");
+                }}
+              >
+                <option value="">시/도 선택</option>
+                {PROVINCES.map((p) => (
+                  <option key={p.code} value={p.code}>
+                    {p.name}
+                  </option>
+                ))}
+              </select>
+
+              <select
+                className="h-11 rounded-xl border px-3 cursor-pointer text-sm"
+                value={toDistrictCode}
+                onChange={(e) => setToDistrictCode(e.target.value)}
+                disabled={!toProvinceCode}
+              >
+                <option value="">
+                  {toProvinceCode ? "시/군/구 선택" : "시/도를 먼저 선택"}
+                </option>
+                {toDistricts.map((d) => (
                   <option key={d.code} value={d.code}>
                     {d.name}
                   </option>

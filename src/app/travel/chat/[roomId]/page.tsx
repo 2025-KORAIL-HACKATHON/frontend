@@ -71,7 +71,7 @@ export default function ChatRoomPage() {
   const [text, setText] = useState("");
   const bottomRef = useRef<HTMLDivElement>(null);
 
-  // ✅ IME 조합 상태 추적 (중요)
+  // IME 조합 상태 추적 (중요)
   const isComposingRef = useRef(false);
 
   // 상대방 자동응답 타이머 정리용
