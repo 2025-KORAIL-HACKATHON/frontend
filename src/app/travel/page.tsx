@@ -6,6 +6,7 @@ import { useState } from "react";
 import { useTravelProfile } from "@/hooks/useTravelProfile";
 import MobileFrame from "@/components/mobile/MobileFrame";
 import MateRequirementModal from "@/components/travel/MateRequirementModal";
+import { TravelProfile } from "@/types/profile";
 
 // mock 상태(나중에 API/스토어로 교체)
 const PURCHASE_KEY = "korail.purchaseHistory.v1";
@@ -30,18 +31,15 @@ export default function TravelPage() {
   const { profile, ready } = useTravelProfile();
 
   const [openReq, setOpenReq] = useState(false);
-  const [purchaseOk, setPurchaseOk] = useState(false);
-  const [certifiedOk, setCertifiedOk] = useState(false);
+  const seed = (profile as TravelProfile | null)?.avatarSeed ?? "K";
 
   if (!ready) return null;
 
-  const profileOk = !!profile;
-  const hasProfile = profileOk;
+  // 타입 좁히기: profile이 있으면 true
+  const hasProfile = profile !== null;
+  const profileOk = hasProfile;
 
   const openModal = () => {
-    // 모달 열 때 최신 상태 다시 읽기 (다른 페이지에서 설정하고 돌아올 수 있으니까)
-    setPurchaseOk(getBool(PURCHASE_KEY));
-    setCertifiedOk(getBool(CERT_KEY));
     setOpenReq(true);
   };
 
@@ -50,8 +48,6 @@ export default function TravelPage() {
       <MateRequirementModal
         open={openReq}
         onClose={() => setOpenReq(false)}
-        purchaseOk={purchaseOk}
-        certifiedOk={certifiedOk}
         profileOk={profileOk}
         onGoPurchase={() => router.push("/ticket")}
         onGoVerify={() => router.push("/auth/verify")}
@@ -77,12 +73,31 @@ export default function TravelPage() {
               korail today
             </div>
             <div className="mt-2 text-sm opacity-90">
-              코레일과 함께 여행을 즐겨보세요!
+              {hasProfile
+                ? "코레일과 함께 여행을 즐겨보세요!"
+                : "여행 프로필을 먼저 설정해주세요."}
             </div>
           </div>
 
           <div className="absolute right-4 top-14 flex flex-col items-center gap-2">
-            <div>{hasProfile && <Avatar seed={profile!.avatarSeed} />}</div>
+            {/* ✅ 아바타/이미지 분기 */}
+            <div>
+              {hasProfile ? (
+                <div className="relative h-10 w-10 overflow-hidden rounded-full border border-white/40">
+                  <Image
+                    src="/images/profile.png"
+                    alt="profile"
+                    fill
+                    sizes="40px"
+                    className="object-cover"
+                    priority
+                  />
+                </div>
+              ) : (
+                <Avatar seed={seed} />
+              )}
+            </div>
+
             <button
               type="button"
               onClick={() => router.push("/travel/profile")}
@@ -102,7 +117,6 @@ export default function TravelPage() {
               <div className="text-lg font-black">여행 메이트 구하기</div>
             </div>
 
-            {/* 여기만 변경: 모달 오픈 */}
             <button
               type="button"
               onClick={openModal}

@@ -55,8 +55,6 @@ function RequirementRow({
 interface Props {
   open: boolean;
   onClose: () => void;
-  purchaseOk: boolean;
-  certifiedOk: boolean;
   profileOk: boolean;
 
   onGoPurchase: () => void;
@@ -69,19 +67,61 @@ interface Props {
 export default function MateRequirementModal({
   open,
   onClose,
-  purchaseOk,
-  certifiedOk,
   profileOk,
   onGoPurchase,
   onGoVerify,
   onGoProfile,
   onConfirm,
 }: Props) {
-  const allDone = purchaseOk && certifiedOk && profileOk;
+  const allDone = profileOk;
+
+  const InfoIcon = ({ done }: { done: boolean }) => (
+    <svg
+      width="18"
+      height="18"
+      viewBox="0 0 24 24"
+      fill="none"
+      className={done ? "text-emerald-600" : "text-rose-500"}
+      aria-hidden="true"
+    >
+      {/* circle */}
+      <path
+        d="M12 22a10 10 0 1 0 0-20 10 10 0 0 0 0 20Z"
+        stroke="currentColor"
+        strokeWidth="2"
+      />
+      {/* check or ! */}
+      {done ? (
+        <path
+          d="M7.5 12.2l2.7 2.7 6.3-6.3"
+          stroke="currentColor"
+          strokeWidth="2"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        />
+      ) : (
+        <>
+          <path
+            d="M12 7v7"
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeLinecap="round"
+          />
+          <path
+            d="M12 17h.01"
+            stroke="currentColor"
+            strokeWidth="3"
+            strokeLinecap="round"
+          />
+        </>
+      )}
+    </svg>
+  );
 
   return (
     <Modal open={open} onClose={onClose}>
-      <div className="mt-6 flex items-center justify-center text-sm">
+      <div className="mt-6 flex items-center justify-center gap-2 text-sm">
+        <InfoIcon done={allDone} />
         <span className="font-semibold">
           {allDone
             ? "모든 단계를 완료하셨습니다!"

@@ -5,9 +5,15 @@ import {
   loadTravelProfile,
   saveTravelProfile,
 } from "@/lib/travelProfileStorage";
-import { TravelProfile } from "@/types/profile";
+import type { TravelProfile } from "@/types/profile";
 
-export function useTravelProfile() {
+type UseTravelProfileReturn = {
+  profile: TravelProfile | null;
+  ready: boolean;
+  upsert: (next: TravelProfile) => void;
+};
+
+export function useTravelProfile(): UseTravelProfileReturn {
   const [profile, setProfile] = useState<TravelProfile | null>(null);
   const [ready, setReady] = useState(false);
 
