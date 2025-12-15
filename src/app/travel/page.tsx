@@ -7,7 +7,7 @@ import { useTravelProfile } from "@/hooks/useTravelProfile";
 import MobileFrame from "@/components/mobile/MobileFrame";
 import MateRequirementModal from "@/components/travel/MateRequirementModal";
 
-// ✅ mock 상태(나중에 API/스토어로 교체)
+// mock 상태(나중에 API/스토어로 교체)
 const PURCHASE_KEY = "korail.purchaseHistory.v1";
 const CERT_KEY = "korail.certified.v1";
 
@@ -56,6 +56,7 @@ export default function TravelPage() {
         onGoPurchase={() => router.push("/ticket")}
         onGoVerify={() => router.push("/auth/verify")}
         onGoProfile={() => router.push("/travel/profile")}
+        onConfirm={() => router.push("/travel/recommend/input")}
       />
 
       <div className="bg-white">
@@ -105,7 +106,7 @@ export default function TravelPage() {
             <button
               type="button"
               onClick={openModal}
-              className="cursor-pointer rounded-full border px-3 py-2 text-xs font-semibold"
+              className="cursor-pointer rounded-full bg-white/90 px-3 py-2 text-xs font-semibold text-neutral-900 shadow"
             >
               여행 메이트 구하기
             </button>
@@ -124,7 +125,10 @@ export default function TravelPage() {
               <br />
               국내 여행지 코스를 추천받아 보세요
             </div>
-            <button className="rounded-full border px-3 py-2 text-xs font-semibold">
+            <button
+              onClick={openModal}
+              className="cursor-pointer rounded-full bg-white/90 px-3 py-2 text-xs font-semibold text-neutral-900 shadow"
+            >
               맞춤 일정 추천받기
             </button>
           </div>

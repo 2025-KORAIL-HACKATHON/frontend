@@ -62,6 +62,8 @@ interface Props {
   onGoPurchase: () => void;
   onGoVerify: () => void;
   onGoProfile: () => void;
+
+  onConfirm: () => void;
 }
 
 export default function MateRequirementModal({
@@ -73,6 +75,7 @@ export default function MateRequirementModal({
   onGoPurchase,
   onGoVerify,
   onGoProfile,
+  onConfirm,
 }: Props) {
   const allDone = purchaseOk && certifiedOk && profileOk;
 
@@ -108,7 +111,7 @@ export default function MateRequirementModal({
         />
       </div>
 
-      <div className="mt-6 flex items-center justify-center gap-2 text-sm">
+      <div className="mt-6 flex items-center justify-center text-sm">
         <span className="font-semibold">
           {allDone
             ? "모든 단계를 완료하셨습니다!"
@@ -119,7 +122,11 @@ export default function MateRequirementModal({
       <button
         type="button"
         disabled={!allDone}
-        onClick={onClose}
+        onClick={() => {
+          if (!allDone) return;
+          onClose();
+          onConfirm();
+        }}
         className={[
           "cursor-pointer mt-6 w-full h-12 rounded-full font-bold",
           allDone
