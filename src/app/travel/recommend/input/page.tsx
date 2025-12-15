@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import { useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import MobileFrame from "@/components/mobile/MobileFrame";
@@ -82,11 +83,9 @@ export default function RecommendInputPage() {
 
   const [travelType, setTravelType] = useState<TravelType>("FREE");
 
-  // 지역: 시/도 코드 + 구/군 코드 (2단계)
   const [provinceCode, setProvinceCode] = useState("");
   const [districtCode, setDistrictCode] = useState("");
 
-  // 여행 목적: 단일 선택
   const [purpose, setPurpose] = useState<string>("");
 
   const [period, setPeriod] = useState<RecommendInput["period"] | "">("");
@@ -95,7 +94,6 @@ export default function RecommendInputPage() {
   );
   const [people, setPeople] = useState<RecommendInput["people"] | "">("");
 
-  // 달력(날짜)
   const [startDate, setStartDate] = useState<string>("");
   const [endDate, setEndDate] = useState<string>("");
 
@@ -112,7 +110,6 @@ export default function RecommendInputPage() {
     return districtsOfProvince.find((d) => d.code === districtCode)?.name ?? "";
   }, [districtCode, districtsOfProvince]);
 
-  // 날짜 선택 시, 종료일이 시작일보다 빠르면 자동 보정
   const onChangeStart = (v: string) => {
     setStartDate(v);
     if (endDate && v && endDate < v) setEndDate(v);
@@ -139,7 +136,7 @@ export default function RecommendInputPage() {
       !!startDate &&
       !!endDate &&
       !!period &&
-      !!purpose && // 단일 목적 체크
+      !!purpose &&
       !!intensity &&
       !!people
     );
@@ -162,15 +159,10 @@ export default function RecommendInputPage() {
       travelType,
       region1: provinceName,
       region2: districtName,
-
       period: period as RecommendInput["period"],
-
-      // 목적을 배열로 저장해야 기존 타입( string[] )과 호환됨
       purposes: [purpose],
-
       intensity: intensity as RecommendInput["intensity"],
       people: people as RecommendInput["people"],
-
       startDate,
       endDate,
     };
@@ -183,17 +175,41 @@ export default function RecommendInputPage() {
     <MobileFrame showTopBar={false} showBottomBar={false}>
       <div className="h-full flex flex-col bg-white">
         {/* 고정 헤더 */}
-        <header className="h-14 shrink-0 grid grid-cols-3 items-center px-4 bg-white">
-          <button
-            type="button"
-            onClick={() => router.back()}
-            className="justify-self-start text-sm cursor-pointer"
-            aria-label="뒤로가기"
-          >
-            ←
-          </button>
-          <div className="justify-self-center font-bold">정보 입력</div>
-          <div className="justify-self-end w-6" />
+        <header className="shrink-0 bg-white">
+          {/* 상단 네비(뒤로/제목) */}
+          <div className="h-14 grid grid-cols-3 items-center px-4">
+            <button
+              type="button"
+              onClick={() => router.back()}
+              className="justify-self-start text-sm cursor-pointer"
+              aria-label="뒤로가기"
+            >
+              ←
+            </button>
+            <div className="justify-self-center font-bold">정보 입력</div>
+            <div className="justify-self-end w-6" />
+          </div>
+
+          {/* 추가: 이미지처럼 "왼쪽 문구 + 가운데 svg" */}
+          <div className="px-5 pb-4">
+            <div className="relative h-10">
+              {/* 가운데 SVG */}
+              <div className="absolute left-1/2 top-0 -translate-x-1/2">
+                <Image
+                  src="/icons/kotrip.svg"
+                  alt="ko mate"
+                  width={120}
+                  height={24}
+                  priority
+                />
+              </div>
+
+              {/* 문구: SVG의 왼쪽 아래 */}
+              <div className="absolute left-1/2 top-14 -translate-x-48 text-sm font-semibold text-neutral-700">
+                여행지 추천받기 시작할까요?
+              </div>
+            </div>
+          </div>
         </header>
 
         {/* 본문 스크롤 */}
@@ -249,7 +265,7 @@ export default function RecommendInputPage() {
           {/* 지역 */}
           <div className="mt-6">
             <div className="text-sm font-semibold mb-2">여행 지역</div>
-            <div className="cursor-pointer grid grid-cols-2 gap-3">
+            <div className="grid grid-cols-2 gap-3">
               <select
                 className="h-11 rounded-xl border px-3 cursor-pointer text-sm"
                 value={provinceCode}

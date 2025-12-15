@@ -8,6 +8,7 @@ import MobileFrame from "@/components/mobile/MobileFrame";
 import MateRequirementModal from "@/components/travel/MateRequirementModal";
 import { TravelProfile } from "@/types/profile";
 import RegionCarousel from "@/components/travel/RegionCarousel";
+import MatePostCarousel from "@/components/travel/MatePostCarousel";
 
 function Avatar({ seed }: { seed: string }) {
   const initials = seed?.slice(0, 1).toUpperCase() || "";
@@ -52,7 +53,7 @@ export default function TravelPage() {
       <div className="bg-white">
         <section className="relative h-56">
           <Image
-            src="/images/travel-hero.jpg"
+            src="/images/travel-hero.png"
             alt="travel hero"
             fill
             className="object-cover"
@@ -158,9 +159,39 @@ export default function TravelPage() {
             </button>
           </div>
 
-          <div className="mt-4 grid grid-cols-2 gap-3">
-            <div className="h-40 rounded-2xl bg-neutral-200" />
-            <div className="h-40 rounded-2xl bg-neutral-200 border-2 border-purple-500" />
+          <div className="mt-4">
+            <MatePostCarousel
+              slides={[
+                {
+                  img: "/images/mate-1.png",
+                  title: "1. 여행 프로필 만들기",
+                  desc: "혼자 가기 어려운 체험이나 맛집 같이 가실 분 합니다! 제가 현지 맛집 정보를 많이 알고 있어요.",
+                },
+                {
+                  img: "/images/mate-2.png",
+                  title: "2. 모집글 목록 확인",
+                  desc: "혼자 가기 어려운 체험이나 맛집 같이 가실 분 합니다! 제가 현지 맛집 정보를 많이 알고 있어요.",
+                },
+                {
+                  img: "/images/mate-3.png",
+                  title: "3. 여행 정보 입력",
+                  desc: "혼자 가기 어려운 체험이나 맛집 같이 가실 분 합니다! 제가 현지 맛집 정보를 많이 알고 있어요.",
+                },
+                {
+                  img: "/images/mate-4.png",
+                  title: "4. 맞춤형 모집글 확인",
+                  desc: "혼자 가기 어려운 체험이나 맛집 같이 가실 분 합니다! 제가 현지 맛집 정보를 많이 알고 있어요.",
+                },
+                {
+                  img: "/images/mate-5.png",
+                  title: "5. AI 모집글 생성",
+                  desc: "혼자 가기 어려운 체험이나 맛집 같이 가실 분 합니다! 제가 현지 맛집 정보를 많이 알고 있어요.",
+                },
+              ]}
+              height={270}
+              slideBasis={0.9}
+              speedPxPerSec={32}
+            />
           </div>
         </section>
       </div>

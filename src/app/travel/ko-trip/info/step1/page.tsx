@@ -236,7 +236,7 @@ export default function KoTripInfoStep1Page() {
             ko mate
           </div>
 
-          {/* ✅ 이미지처럼: 가운데 정렬 X, 살짝 왼쪽 시작 느낌 */}
+          {/* 이미지처럼: 가운데 정렬 X, 살짝 왼쪽 시작 느낌 */}
           <div className="mt-4">
             <StepProgress total={3} current={2} />
           </div>
