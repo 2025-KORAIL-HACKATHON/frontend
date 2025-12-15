@@ -77,13 +77,13 @@ export default function TravelPage() {
           <div className="absolute right-4 top-14 flex flex-col items-center gap-2">
             <div className="h-16">
               {hasProfile ? (
-                <div className="relative h-10 w-10 overflow-hidden rounded-full border border-white/40">
+                <div className="relative h-16 w-16 overflow-hidden rounded-full border border-white/40">
                   <Image
                     src="/images/profile.png"
                     alt="profile"
                     fill
                     sizes="40px"
-                    className="object-cover"
+                    className="object-contain"
                     priority
                   />
                 </div>
