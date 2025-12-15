@@ -83,11 +83,11 @@ export default function RecommendInputPage() {
 
   const [travelType, setTravelType] = useState<TravelType>("FREE");
 
-  // ✅ 출발지
+  // 출발지
   const [fromProvinceCode, setFromProvinceCode] = useState("");
   const [fromDistrictCode, setFromDistrictCode] = useState("");
 
-  // ✅ 도착지
+  // 도착지
   const [toProvinceCode, setToProvinceCode] = useState("");
   const [toDistrictCode, setToDistrictCode] = useState("");
 
