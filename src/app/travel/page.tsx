@@ -146,11 +146,11 @@ export default function TravelPage() {
               <div className="text-lg font-black">여행 메이트 구하기</div>
             </div>
 
-            {/* ✅ ko-mate: 프로필 없으면 모달 / 있으면 /travel/recommend/input */}
+            {/* ko-mate: 프로필 없으면 모달 / 있으면 /travel/recommend/input */}
             <button
               type="button"
               onClick={() =>
-                openModalOrGo(() => router.push("/travel/recommend/input"))
+                openModalOrGo(() => router.push("/travel/ko-trip"))
               }
               className="cursor-pointer rounded-full bg-white/90 px-3 py-2 text-xs font-semibold text-neutral-900 shadow"
             >

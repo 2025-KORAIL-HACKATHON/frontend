@@ -59,7 +59,7 @@ export default function PackageResultPage() {
       {/* 전체 overflow-hidden으로 잠금 */}
       <div className="h-full flex flex-col bg-white overflow-hidden">
         {/* 고정 헤더 */}
-        <header className="h-14 shrink-0 grid grid-cols-3 items-center px-4 border-b bg-white">
+        <header className="h-14 shrink-0 grid grid-cols-3 items-center px-4 bg-white">
           <button
             type="button"
             onClick={() => router.back()}

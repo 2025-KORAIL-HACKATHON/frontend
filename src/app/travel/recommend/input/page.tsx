@@ -86,7 +86,7 @@ export default function RecommendInputPage() {
   const [provinceCode, setProvinceCode] = useState("");
   const [districtCode, setDistrictCode] = useState("");
 
-  // ✅ 여행 목적: 단일 선택
+  // 여행 목적: 단일 선택
   const [purpose, setPurpose] = useState<string>("");
 
   const [period, setPeriod] = useState<RecommendInput["period"] | "">("");
@@ -139,7 +139,7 @@ export default function RecommendInputPage() {
       !!startDate &&
       !!endDate &&
       !!period &&
-      !!purpose && // ✅ 단일 목적 체크
+      !!purpose && // 단일 목적 체크
       !!intensity &&
       !!people
     );
@@ -165,7 +165,7 @@ export default function RecommendInputPage() {
 
       period: period as RecommendInput["period"],
 
-      // ✅ 목적을 배열로 저장해야 기존 타입( string[] )과 호환됨
+      // 목적을 배열로 저장해야 기존 타입( string[] )과 호환됨
       purposes: [purpose],
 
       intensity: intensity as RecommendInput["intensity"],

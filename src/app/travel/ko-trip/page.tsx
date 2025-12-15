@@ -218,7 +218,7 @@ export default function KoTripPage() {
           <button
             type="button"
             onClick={() =>
-              guardOrRun(() => router.push("/travel/ko-trip/create"))
+              guardOrRun(() => router.push("/travel/ko-trip/info"))
             }
             className="cursor-pointer w-full h-14 rounded-2xl bg-sky-500 text-white font-black shadow"
           >

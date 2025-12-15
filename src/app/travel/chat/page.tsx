@@ -39,13 +39,13 @@ export default function ChatListPage() {
         </header>
 
         <div className="px-6 pb-6">
-          <div className="flex flex-col gap-8 ">
+          <div className="flex flex-col gap-8 pt-6">
             {mockRooms.map((r) => (
               <button
                 key={r.id}
                 type="button"
                 onClick={() => router.push(`/travel/chat/${r.id}`)}
-                className="border-gray-300 border-b cursor-pointer w-full text-left flex items-center gap-4 pb-4"
+                className="border-gray-300 border-b cursor-pointer w-full text-left flex items-center gap-4 pb-6"
               >
                 <div className="h-16 w-16 rounded-full bg-sky-100 shrink-0" />
 
