@@ -41,6 +41,27 @@ function IconSend() {
   );
 }
 
+function pickReply(userText: string) {
+  const t = userText.trim();
+  if (/안녕|하이|반가/i.test(t)) return "안녕하세요! 😊";
+  if (/가능|되나요|되요|돼요|괜찮/i.test(t))
+    return "네 가능해요! 일정만 맞춰보면 좋을 것 같아요.";
+  if (/시간|언제|몇시|날짜/i.test(t))
+    return "저는 그 날짜 괜찮아요! 몇 시쯤 만나면 좋을까요?";
+  if (/장소|어디|역|만나/i.test(t))
+    return "저는 역 근처에서 만나도 좋아요. 편한 곳 있으세요?";
+  if (/감사|고마/i.test(t)) return "저도 감사합니다 :)";
+
+  const pool = [
+    "좋아요! 자세히 얘기해볼까요?",
+    "오케이 👍 그럼 계획 조금 더 공유해주실래요?",
+    "저도 그 코스 관심 있었어요!",
+    "그럼 채팅으로 일정 조율해봐요 🙂",
+    "완전 좋네요. 저는 무리 없는 일정 선호해요!",
+  ];
+  return pool[Math.floor(Math.random() * pool.length)];
+}
+
 export default function ChatRoomPage() {
   const router = useRouter();
   const params = useParams<{ roomId: string }>();
@@ -50,38 +71,21 @@ export default function ChatRoomPage() {
   const [text, setText] = useState("");
   const bottomRef = useRef<HTMLDivElement>(null);
 
+  // ✅ IME 조합 상태 추적 (중요)
+  const isComposingRef = useRef(false);
+
+  // 상대방 자동응답 타이머 정리용
+  const replyTimerRef = useRef<number | null>(null);
+
   const title = useMemo(
     () => (roomId === "room-traction" ? "트랙션 팀원" : "닉네임"),
     [roomId]
   );
 
-  // 상단에 보여줄 “모집글 미리보기” 카드(간단 더미)
   const previewPost = mockPosts[0];
 
   useEffect(() => {
     const existing = loadChat(roomId);
-    // 채팅이 한 번도 없으면 예시 대화 넣기
-    if (existing.length === 0) {
-      const seed: ChatMessage[] = [
-        {
-          id: "m1",
-          roomId,
-          from: "other",
-          text: "안녕하세요!",
-          ts: Date.now() - 1000 * 60 * 60,
-        },
-        {
-          id: "m2",
-          roomId,
-          from: "me",
-          text: "네 안녕하세요 :)",
-          ts: Date.now() - 1000 * 60 * 50,
-        },
-      ];
-      saveChat(roomId, seed);
-      setMsgs(seed);
-      return;
-    }
     setMsgs(existing);
   }, [roomId]);
 
@@ -89,24 +93,63 @@ export default function ChatRoomPage() {
     bottomRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [msgs.length]);
 
+  useEffect(() => {
+    return () => {
+      if (replyTimerRef.current != null) {
+        window.clearTimeout(replyTimerRef.current);
+        replyTimerRef.current = null;
+      }
+    };
+  }, []);
+
   const send = () => {
     const t = text.trim();
     if (!t) return;
 
-    const next: ChatMessage[] = [
-      ...msgs,
-      { id: crypto.randomUUID(), roomId, from: "me", text: t, ts: Date.now() },
-    ];
-    setMsgs(next);
-    saveChat(roomId, next);
+    const myMsg: ChatMessage = {
+      id: crypto.randomUUID(),
+      roomId,
+      from: "me",
+      text: t,
+      ts: Date.now(),
+    };
+
+    const afterMy = [...msgs, myMsg];
+    setMsgs(afterMy);
+    saveChat(roomId, afterMy);
+
+    // ✅ 먼저 비우기
     setText("");
+
+    // 2) 상대방 자동 답장
+    const delay = 800 + Math.floor(Math.random() * 800);
+    if (replyTimerRef.current != null)
+      window.clearTimeout(replyTimerRef.current);
+
+    replyTimerRef.current = window.setTimeout(() => {
+      const reply: ChatMessage = {
+        id: crypto.randomUUID(),
+        roomId,
+        from: "other",
+        text: pickReply(t),
+        ts: Date.now(),
+      };
+
+      setMsgs((prev) => {
+        const next = [...prev, reply];
+        saveChat(roomId, next);
+        return next;
+      });
+
+      replyTimerRef.current = null;
+    }, delay);
   };
 
   return (
     <MobileFrame showTopBar={false} showBottomBar={false}>
       <div className="h-full bg-white flex flex-col">
         {/* 헤더 */}
-        <header className="shrink-0 px-4 pt-3 pb-3  bg-white">
+        <header className="shrink-0 px-4 pt-3 pb-3 bg-white">
           <div className="flex items-center justify-between">
             <button
               type="button"
@@ -131,10 +174,16 @@ export default function ChatRoomPage() {
                 {previewPost.desc}
               </div>
               <div className="mt-2 flex gap-2">
-                <button className="h-8 px-3 rounded-md border text-xs">
+                <button
+                  type="button"
+                  className="h-8 px-3 rounded-md border text-xs"
+                >
                   동행 신청하기
                 </button>
-                <button className="h-8 px-3 rounded-md border text-xs">
+                <button
+                  type="button"
+                  className="h-8 px-3 rounded-md border text-xs"
+                >
                   모집글 확인하기
                 </button>
               </div>
@@ -174,6 +223,22 @@ export default function ChatRoomPage() {
             <input
               value={text}
               onChange={(e) => setText(e.target.value)}
+              // ✅ IME 조합 시작/끝 추적
+              onCompositionStart={() => {
+                isComposingRef.current = true;
+              }}
+              onCompositionEnd={() => {
+                isComposingRef.current = false;
+              }}
+              onKeyDown={(e) => {
+                if (e.key !== "Enter") return;
+
+                // ✅ 조합 중 Enter는 "확정" 용도라 전송 금지
+                if (isComposingRef.current) return;
+
+                e.preventDefault();
+                send();
+              }}
               placeholder="메시지 보내기"
               className="flex-1 h-11 rounded-full bg-neutral-100 px-4 text-sm outline-none"
             />

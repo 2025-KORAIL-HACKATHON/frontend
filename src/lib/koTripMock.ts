@@ -105,10 +105,10 @@ export const mockPosts: TripPost[] = Array.from({ length: 6 }).map((_, i) => {
     end: date.end,
     daysText: date.daysText,
 
-    // ✅ (1) 9장 전부 랜덤 순서로 넣기
+    // (1) 9장 전부 랜덤 순서로 넣기
     purposeImages: shuffle(PURPOSE_IMAGE_LIST),
 
-    // ✅ (2) 만약 “대표 이미지만 1~3장”만 쓰고 싶으면 위 대신 아래로 바꿔
+    // (2) 만약 “대표 이미지만 1~3장”만 쓰고 싶으면 위 대신 아래로 바꿔
     // purposeImages: pickSome(PURPOSE_IMAGE_LIST, rand([1, 2, 3] as const)),
   };
 });
