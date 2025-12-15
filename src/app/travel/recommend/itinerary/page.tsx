@@ -1,20 +1,21 @@
 "use client";
 
 import Image from "next/image";
-import { useMemo, useState } from "react";
+import { useMemo, useRef, useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import MobileFrame from "@/components/mobile/MobileFrame";
 import { useRecommendStore } from "@/stores/recommendStore";
+import { useInView } from "@/hooks/useInView";
 
 type Ticket = {
-  trainNo: string; // KTX-이음 809
-  departTime: string; // 09:55
-  arriveTime: string; // 11:58
-  from: string; // 서울
-  to: string; // 강릉
-  price: number; // 27600
-  badgeText?: string; // M 5% 적립
-  statusText?: string; // 매진
+  trainNo: string;
+  departTime: string;
+  arriveTime: string;
+  from: string;
+  to: string;
+  price: number;
+  badgeText?: string;
+  statusText?: string;
 };
 
 type TimelineItem =
@@ -23,7 +24,7 @@ type TimelineItem =
 
 type DayPlan = {
   day: number;
-  heroTitle: string; // "강릉"
+  heroTitle: string;
   items: TimelineItem[];
 };
 
@@ -55,11 +56,59 @@ function formatWon(n: number) {
 }
 
 function TimelineNumber({ n }: { n: number }) {
+  // ✅ 1부터 보이도록
   return (
     <div className="h-10 w-10 rounded-full bg-sky-500 text-white flex items-center justify-center font-bold">
       {n}
     </div>
   );
+}
+
+/** ✅ 들어올 때마다 다시 재생되는 Shine */
+function ShineOverlay({ playId }: { playId: number }) {
+  return (
+    <div
+      aria-hidden
+      className="pointer-events-none absolute inset-0 overflow-hidden rounded-2xl"
+    >
+      <div
+        key={playId} // ✅ key 변화로 애니메이션 재시작
+        className={[
+          "absolute -inset-y-6 -left-1/2 w-[200%]",
+          "bg-linear-to-r from-transparent via-sky-200/40 to-transparent",
+          "rotate-12",
+          "animate-[shine_1.2s_ease-out]",
+        ].join(" ")}
+      />
+    </div>
+  );
+}
+
+/**
+ * ✅ 카드 공통:
+ * - viewport 진입할 때마다 shine playId++
+ * - fade-up(등장)은 최초 1회만 (스크롤 업/다운 때 다시 숨지 않게)
+ */
+function useCardMotion() {
+  const { ref, inView } = useInView<HTMLDivElement>({
+    rootMargin: "0px 0px -20% 0px",
+    threshold: 0.15,
+  });
+
+  const [playId, setPlayId] = useState(0);
+  const [shownOnce, setShownOnce] = useState(false);
+  const prev = useRef(false);
+
+  useEffect(() => {
+    // false -> true 로 바뀌는 "진입" 순간마다 shine 재생
+    if (!prev.current && inView) {
+      setPlayId((v) => v + 1);
+      setShownOnce(true);
+    }
+    prev.current = inView;
+  }, [inView]);
+
+  return { ref, playId, shownOnce };
 }
 
 function TicketCard({
@@ -71,11 +120,22 @@ function TicketCard({
   ticket: Ticket;
   onGoReserve: () => void;
 }) {
-  return (
-    <div className="rounded-2xl bg-white shadow-[0_12px_30px_rgba(0,0,0,0.12)] border border-neutral-100 p-4">
-      <div className="font-bold text-sky-600">{title}</div>
+  const { ref, playId, shownOnce } = useCardMotion();
 
-      <div className="mt-3 rounded-xl border border-neutral-200 p-3">
+  return (
+    <div
+      ref={ref}
+      className={[
+        "relative rounded-2xl bg-white shadow-[0_12px_30px_rgba(0,0,0,0.12)] border border-neutral-100 p-4 overflow-hidden",
+        "transition-all duration-500",
+        shownOnce ? "opacity-100 translate-y-0" : "opacity-0 translate-y-2",
+      ].join(" ")}
+    >
+      {playId > 0 && <ShineOverlay playId={playId} />}
+
+      <div className="relative font-bold text-sky-600">{title}</div>
+
+      <div className="relative mt-3 rounded-xl border border-neutral-200 p-3">
         <div className="flex items-center gap-3">
           <div className="text-sm font-semibold text-neutral-800">
             {ticket.trainNo}
@@ -115,7 +175,7 @@ function TicketCard({
       <button
         type="button"
         onClick={onGoReserve}
-        className="mt-4 w-full h-10 rounded-full bg-sky-500 text-white font-bold text-sm"
+        className="relative mt-4 w-full h-10 rounded-full bg-sky-500 text-white font-bold text-sm"
       >
         승차권 예매로 이동
       </button>
@@ -132,9 +192,20 @@ function NormalCard({
   desc: string;
   badge?: string;
 }) {
+  const { ref, playId, shownOnce } = useCardMotion();
+
   return (
-    <div className="rounded-2xl bg-white shadow-[0_10px_24px_rgba(0,0,0,0.10)] border border-neutral-100 px-4 py-4">
-      <div className="flex items-center gap-2">
+    <div
+      ref={ref}
+      className={[
+        "relative rounded-2xl bg-white shadow-[0_10px_24px_rgba(0,0,0,0.10)] border border-neutral-100 px-4 py-4 overflow-hidden",
+        "transition-all duration-500",
+        shownOnce ? "opacity-100 translate-y-0" : "opacity-0 translate-y-2",
+      ].join(" ")}
+    >
+      {playId > 0 && <ShineOverlay playId={playId} />}
+
+      <div className="relative flex items-center gap-2">
         {badge ? (
           <span className="text-[10px] px-2 py-1 rounded-full bg-orange-50 border border-orange-200 text-orange-700 font-bold">
             {badge}
@@ -142,7 +213,7 @@ function NormalCard({
         ) : null}
         <div className="font-bold text-sky-600">{title}</div>
       </div>
-      <div className="mt-2 text-sm text-neutral-600">{desc}</div>
+      <div className="relative mt-2 text-sm text-neutral-600">{desc}</div>
     </div>
   );
 }
@@ -152,7 +223,6 @@ export default function ItineraryPage() {
   const { input } = useRecommendStore();
   const [activeDay, setActiveDay] = useState(1);
 
-  //  input 없으면 되돌림
   if (!input) {
     router.replace("/travel/recommend/input");
     return null;
@@ -162,32 +232,38 @@ export default function ItineraryPage() {
     return null;
   }
 
-  //  더미 승차권(프론트에서 보유)
-  const dummyTicket: Ticket = {
+  const city = input.region1 || "강릉";
+
+  // ✅ 더미 승차권(가는/오는)
+  const goTicket: Ticket = {
     trainNo: "KTX-이음 809",
     departTime: "09:55",
     arriveTime: "11:58",
     from: "서울",
-    to: input.region1 || "강릉",
+    to: city,
     price: 27600,
     badgeText: "M 5% 적립",
     statusText: "매진",
   };
 
-  //  스샷 느낌의 더미 일정 (스토어 itinerary가 없으면 이걸로)
-  const fallbackDays: DayPlan[] = useMemo(() => {
-    const city = input.region1 || "강릉";
+  const backTicket: Ticket = {
+    trainNo: "KTX-이음 820",
+    departTime: "19:10",
+    arriveTime: "21:15",
+    from: city,
+    to: "서울",
+    price: 27600,
+    badgeText: "M 5% 적립",
+  };
 
-    return [
+  // ✅ 더미 일정(마지막날에 “오는 승차권” 추가)
+  const days: DayPlan[] = useMemo(() => {
+    const base: DayPlan[] = [
       {
         day: 1,
         heroTitle: city,
         items: [
-          {
-            kind: "TICKET",
-            title: "가는 승차권 맞춤 추천",
-            ticket: dummyTicket,
-          },
+          { kind: "TICKET", title: "가는 승차권 맞춤 추천", ticket: goTicket },
           {
             kind: "NORMAL",
             title: `${city} 시티 호텔`,
@@ -202,12 +278,12 @@ export default function ItineraryPage() {
           {
             kind: "NORMAL",
             title: "히슬라아트월드",
-            desc: "동해 바로 앞 바다를 보며 갤러리 감상",
+            desc: "바다 앞 갤러리 감상",
           },
           {
             kind: "NORMAL",
             title: "순두부 젤라또",
-            desc: "동해 바로 앞 바다를 보며 갤러리 감상",
+            desc: "로컬 디저트 맛보기",
           },
           {
             kind: "NORMAL",
@@ -217,24 +293,16 @@ export default function ItineraryPage() {
           {
             kind: "NORMAL",
             title: "안목 해변",
-            desc: "커피 거리 바로 옆 바다 뷰 감상",
+            desc: "커피거리 + 바다 뷰 감상",
           },
-          {
-            kind: "NORMAL",
-            title: `${city} 시티 호텔`,
-            desc: "짐 정리 / 휴식 / 취침",
-          },
+          { kind: "NORMAL", title: `${city} 시티 호텔`, desc: "휴식 / 취침" },
         ],
       },
       {
         day: 2,
         heroTitle: city,
         items: [
-          {
-            kind: "NORMAL",
-            title: "브런치 카페",
-            desc: "여유로운 아침 식사",
-          },
+          { kind: "NORMAL", title: "브런치 카페", desc: "여유로운 아침 식사" },
           {
             kind: "NORMAL",
             title: "바다 산책 코스",
@@ -243,19 +311,26 @@ export default function ItineraryPage() {
           {
             kind: "NORMAL",
             title: "기념품 쇼핑",
-            desc: "시장/로컬샵에서 기념품 구매",
+            desc: "로컬샵 / 시장에서 쇼핑",
+          },
+          // ✅ 마지막날 “오는 승차권”
+          {
+            kind: "TICKET",
+            title: "오는 승차권 맞춤 추천",
+            ticket: backTicket,
           },
         ],
       },
     ];
-  }, [input.region1, dummyTicket]);
 
-  const days = fallbackDays;
+    return base;
+  }, [city]);
+
   const current = days.find((d) => d.day === activeDay) ?? days[0];
 
   return (
     <MobileFrame showTopBar={false} showBottomBar={false}>
-      {/* 전체 overflow 잠금 + 내부만 스크롤 */}
+      {/* 전체는 잠그고 내부만 스크롤 */}
       <div className="h-full flex flex-col bg-white overflow-hidden">
         {/* 고정 헤더 */}
         <header className="h-14 shrink-0 grid grid-cols-3 items-center px-4 border-b bg-white">
@@ -273,11 +348,11 @@ export default function ItineraryPage() {
           <div className="justify-self-end w-6" />
         </header>
 
-        {/* 헤더 아래: 상단 고정영역 + 스크롤 + 하단 버튼 */}
+        {/* 헤더 아래 */}
         <div className="flex-1 min-h-0 flex flex-col">
-          {/*  스샷처럼 상단(원형 이미지 + 문구 + DAY 탭) */}
+          {/* 상단(원형 이미지 + 문구 + DAY 탭) */}
           <div className="shrink-0 px-5 pt-6">
-            <div className="flex flex-col items-center">
+            <div className="flex flex-row items-center justify-center gap-6">
               <div className="relative h-24 w-24 overflow-hidden rounded-full">
                 <Image
                   src="/images/cover.png"
@@ -288,43 +363,44 @@ export default function ItineraryPage() {
                 />
               </div>
 
-              <div className="mt-4 text-center">
+              <div className="text-center">
                 <div className="text-xl font-black leading-snug">
-                  {current.heroTitle}
-                  <br />
-                  추천 일정입니다.
+                  {current.heroTitle} 추천 일정입니다.
                 </div>
               </div>
+            </div>
 
-              <div className="mt-6 flex gap-3">
-                {days.map((d) => (
-                  <DayChip
-                    key={d.day}
-                    active={activeDay === d.day}
-                    onClick={() => setActiveDay(d.day)}
-                  >
-                    DAY {d.day}
-                  </DayChip>
-                ))}
-              </div>
+            <div className="mt-6 flex gap-3 items-center justify-center">
+              {days.map((d) => (
+                <DayChip
+                  key={d.day}
+                  active={activeDay === d.day}
+                  onClick={() => setActiveDay(d.day)}
+                >
+                  DAY {d.day}
+                </DayChip>
+              ))}
             </div>
           </div>
 
-          {/*  타임라인 리스트만 내부 스크롤 */}
-          <div className="flex-1 min-h-0 overflow-y-auto px-5 py-6">
+          {/* ✅ 리스트만 내부 스크롤 + 스크롤바 숨김 */}
+          <div
+            className={[
+              "flex-1 min-h-0 overflow-y-auto px-5 py-6",
+              "[&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]",
+            ].join(" ")}
+          >
             <div className="relative">
               {/* 왼쪽 세로 라인 */}
               <div className="absolute left-4.5 top-2 bottom-2 w-1 rounded-full bg-sky-500/80" />
 
               <div className="space-y-4">
-                {(current.items ?? []).map((it, idx) => (
+                {current.items.map((it, idx) => (
                   <div key={idx} className="relative flex gap-4">
-                    {/* 번호 */}
                     <div className="shrink-0 relative z-10">
-                      <TimelineNumber n={idx} />
+                      <TimelineNumber n={idx + 1} />
                     </div>
 
-                    {/* 카드 */}
                     <div className="flex-1">
                       {it.kind === "TICKET" ? (
                         <TicketCard
@@ -344,7 +420,7 @@ export default function ItineraryPage() {
                 ))}
               </div>
 
-              {/* 하단 버튼 영역에 가려지지 않게 여백 */}
+              {/* 하단 버튼에 가리지 않도록 여백 */}
               <div className="h-24" />
             </div>
           </div>
