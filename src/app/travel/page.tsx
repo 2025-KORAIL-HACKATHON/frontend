@@ -7,6 +7,7 @@ import { useTravelProfile } from "@/hooks/useTravelProfile";
 import MobileFrame from "@/components/mobile/MobileFrame";
 import MateRequirementModal from "@/components/travel/MateRequirementModal";
 import { TravelProfile } from "@/types/profile";
+import RegionCarousel from "@/components/travel/RegionCarousel";
 
 function Avatar({ seed }: { seed: string }) {
   const initials = seed?.slice(0, 1).toUpperCase() || "";
@@ -101,7 +102,38 @@ export default function TravelPage() {
           </div>
         </section>
 
-        <section className="px-5 py-5">
+        <section className="px-5 py-6">
+          <div className="flex items-center justify-between">
+            <div className="text-lg font-black">
+              당신에게 딱 맞는
+              <br />
+              국내 여행지 코스를 추천받아 보세요
+            </div>
+            <button
+              type="button"
+              onClick={openModal}
+              className="cursor-pointer rounded-full bg-white/90 px-3 py-2 text-xs font-semibold text-neutral-900 shadow"
+            >
+              맞춤 일정 추천받기
+            </button>
+          </div>
+
+          <div className="mt-4">
+            <RegionCarousel
+              durationSec={5}
+              slides={[
+                { src: "/images/daegu.png", label: "Daegu" },
+                { src: "/images/gangwon.png", label: "Gangwon" },
+                { src: "/images/jeju.png", label: "Jeju" },
+                { src: "/images/daejeon.png", label: "Daejeon" },
+                { src: "/images/seoul.png", label: "Seoul" },
+                { src: "/images/busan.png", label: "Busan" },
+              ]}
+            />
+          </div>
+        </section>
+
+        <section className="px-5 pb-5">
           <div className="flex items-center justify-between">
             <div>
               <div className="text-sm font-semibold">
@@ -122,32 +154,6 @@ export default function TravelPage() {
           <div className="mt-4 grid grid-cols-2 gap-3">
             <div className="h-40 rounded-2xl bg-neutral-200" />
             <div className="h-40 rounded-2xl bg-neutral-200 border-2 border-purple-500" />
-          </div>
-        </section>
-
-        <section className="px-5 pb-6">
-          <div className="flex items-center justify-between">
-            <div className="text-lg font-black">
-              당신에게 딱 맞는
-              <br />
-              국내 여행지 코스를 추천받아 보세요
-            </div>
-            <button
-              type="button"
-              onClick={openModal}
-              className="cursor-pointer rounded-full bg-white/90 px-3 py-2 text-xs font-semibold text-neutral-900 shadow"
-            >
-              맞춤 일정 추천받기
-            </button>
-          </div>
-
-          <div className="mt-4 grid grid-cols-2 gap-3">
-            <div className="h-40 rounded-2xl bg-neutral-200 flex items-end p-3 font-bold">
-              Seoul
-            </div>
-            <div className="h-40 rounded-2xl bg-neutral-200 flex items-end p-3 font-bold">
-              Daejeon
-            </div>
           </div>
         </section>
       </div>
