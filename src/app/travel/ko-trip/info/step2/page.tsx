@@ -1,5 +1,5 @@
 "use client";
-
+import Image from "next/image";
 import { useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import MobileFrame from "@/components/mobile/MobileFrame";
@@ -114,8 +114,15 @@ export default function KoTripInfoStep2Page() {
         </header>
 
         <div className="flex-1 min-h-0 overflow-y-auto px-5 py-6">
-          <div className="text-3xl font-black tracking-tight text-center">
-            ko mate
+          {/* 가운데 SVG */}
+          <div className="absolute left-1/2 top-12 -translate-x-1/2">
+            <Image
+              src="/icons/komate.svg"
+              alt="ko mate"
+              width={120}
+              height={24}
+              priority
+            />
           </div>
           <StepProgress total={3} current={3} />
           <div className="mt-6 text-sm font-bold">동행자 관련 정보</div>

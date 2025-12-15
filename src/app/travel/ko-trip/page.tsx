@@ -222,7 +222,7 @@ export default function KoTripPage() {
             }
             className="cursor-pointer w-full h-14 rounded-2xl bg-sky-500 text-white font-black shadow"
           >
-            + AI 자동 모집글 생성하기
+            AI 자동 모집글 생성하기
           </button>
         </div>
       </div>

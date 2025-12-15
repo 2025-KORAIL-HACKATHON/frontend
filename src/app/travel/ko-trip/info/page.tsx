@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import { useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import MobileFrame from "@/components/mobile/MobileFrame";
@@ -92,9 +93,15 @@ export default function KoTripInfoPage() {
         </header>
 
         <div className="flex-1 min-h-0 px-6 pt-6">
-          {/* 가운데 정렬 */}
-          <div className="text-3xl font-black tracking-tight text-center">
-            ko mate
+          {/* 가운데 SVG */}
+          <div className="absolute left-1/2 top-12 -translate-x-1/2">
+            <Image
+              src="/icons/komate.svg"
+              alt="ko mate"
+              width={120}
+              height={24}
+              priority
+            />
           </div>
 
           {/* 컴포넌트 적용 (현재 1단계) */}

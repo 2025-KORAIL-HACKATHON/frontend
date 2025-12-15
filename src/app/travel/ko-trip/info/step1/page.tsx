@@ -232,8 +232,15 @@ export default function KoTripInfoStep1Page() {
 
         {/* 본문 */}
         <div className="flex-1 min-h-0 overflow-y-auto px-5 py-6">
-          <div className="text-3xl font-black tracking-tight text-center">
-            ko mate
+          {/* 가운데 SVG */}
+          <div className="absolute left-1/2 top-12 -translate-x-1/2">
+            <Image
+              src="/icons/komate.svg"
+              alt="ko mate"
+              width={120}
+              height={24}
+              priority
+            />
           </div>
 
           {/* 이미지처럼: 가운데 정렬 X, 살짝 왼쪽 시작 느낌 */}
