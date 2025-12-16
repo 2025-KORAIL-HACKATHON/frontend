@@ -24,7 +24,7 @@ export default function MatchedPage() {
   return (
     <MobileFrame showTopBar={false} showBottomBar={false}>
       <div className="h-full bg-white">
-        <header className="px-4 pt-3 pb-3 border-b">
+        <header className="px-4 pt-3 pb-3">
           <div className="flex items-center justify-between">
             <button
               type="button"
@@ -40,7 +40,7 @@ export default function MatchedPage() {
         </header>
 
         <div className="px-6 py-10">
-          <div className="rounded-2xl border bg-white p-8 flex flex-col items-center">
+          <div className="rounded-2xl shadow bg-white p-8 flex flex-col items-center">
             <div className="flex items-center gap-4">
               <div className="h-16 w-16 rounded-full bg-neutral-200" />
               <div className="h-10 w-10 rounded-full bg-sky-200 flex items-center justify-center">
@@ -67,14 +67,14 @@ export default function MatchedPage() {
               ].map((c, i) => (
                 <span
                   key={i}
-                  className="px-3 py-1 rounded-md border text-xs text-neutral-700 bg-white"
+                  className="px-3 py-1 rounded-md shadow text-xs text-neutral-700 bg-white"
                 >
                   {c}
                 </span>
               ))}
             </div>
 
-            <div className="mt-6 w-full rounded-2xl border p-4">
+            <div className="mt-6 w-full rounded-2xl shadow p-4">
               <div className="flex items-start gap-3">
                 <div className="h-9 w-9 rounded-full bg-sky-100 flex items-center justify-center">
                   🛡️
