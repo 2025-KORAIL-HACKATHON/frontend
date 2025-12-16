@@ -232,15 +232,15 @@ export default function ItineraryPage() {
     return null;
   }
 
-  const city = input.region1 || "강릉";
-
+  const dep = input.region1 || "대전";
+  const arr = input.region2 || "강릉";
   //  더미 승차권(가는/오는)
   const goTicket: Ticket = {
     trainNo: "KTX-이음 809",
     departTime: "09:55",
     arriveTime: "11:58",
-    from: "서울",
-    to: city,
+    from: dep,
+    to: arr,
     price: 27600,
     badgeText: "M 5% 적립",
   };
@@ -249,8 +249,8 @@ export default function ItineraryPage() {
     trainNo: "KTX-이음 820",
     departTime: "19:10",
     arriveTime: "21:15",
-    from: city,
-    to: "서울",
+    from: arr,
+    to: dep,
     price: 27600,
     badgeText: "M 5% 적립",
   };
@@ -260,19 +260,19 @@ export default function ItineraryPage() {
     const base: DayPlan[] = [
       {
         day: 1,
-        heroTitle: city,
+        heroTitle: arr,
         items: [
           { kind: "TICKET", title: "가는 승차권 맞춤 추천", ticket: goTicket },
           {
             kind: "NORMAL",
-            title: `${city} 시티 호텔`,
+            title: `${arr} 시티 호텔`,
             desc: "체크인 / 짐 보관 / 휴식",
             badge: "★ 코레일 제휴 상품",
           },
           {
             kind: "NORMAL",
-            title: `${city} 중앙 시장`,
-            desc: `${city} 간식거리가 모여있는 전통시장`,
+            title: `${arr} 중앙 시장`,
+            desc: `${arr} 간식거리가 모여있는 전통시장`,
           },
           {
             kind: "NORMAL",
@@ -286,7 +286,7 @@ export default function ItineraryPage() {
           },
           {
             kind: "NORMAL",
-            title: `${city} 맛집`,
+            title: `${arr} 맛집`,
             desc: "현지인 추천 맛집 방문",
           },
           {
@@ -294,12 +294,12 @@ export default function ItineraryPage() {
             title: "안목 해변",
             desc: "커피거리 + 바다 뷰 감상",
           },
-          { kind: "NORMAL", title: `${city} 시티 호텔`, desc: "휴식 / 취침" },
+          { kind: "NORMAL", title: `${arr} 시티 호텔`, desc: "휴식 / 취침" },
         ],
       },
       {
         day: 2,
-        heroTitle: city,
+        heroTitle: arr,
         items: [
           { kind: "NORMAL", title: "브런치 카페", desc: "여유로운 아침 식사" },
           {
@@ -323,7 +323,7 @@ export default function ItineraryPage() {
     ];
 
     return base;
-  }, [city]);
+  }, [arr]);
 
   const current = days.find((d) => d.day === activeDay) ?? days[0];
 
