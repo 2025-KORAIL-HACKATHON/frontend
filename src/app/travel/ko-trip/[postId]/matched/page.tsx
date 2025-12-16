@@ -93,7 +93,7 @@ export default function MatchedPage() {
 
               <div className="relative h-16 w-16 rounded-full bg-neutral-200 overflow-hidden">
                 <Image
-                  src="/icons/profile.png"
+                  src="/images/profile.png"
                   alt="상대"
                   fill
                   className="object-contain p-3"
