@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState } from "react";
-import { useParams, useRouter } from "next/navigation";
+import { useParams, useRouter, useSearchParams } from "next/navigation";
 import MobileFrame from "@/components/mobile/MobileFrame";
 import { loadChat, saveChat, ChatMessage } from "@/lib/koTripStorage";
 import { mockPosts } from "@/lib/koTripMock";
@@ -66,7 +66,11 @@ export default function ChatRoomPage() {
   const router = useRouter();
   const params = useParams<{ roomId: string }>();
   const roomId = params.roomId;
+  const searchParams = useSearchParams();
+  const otherUsername = searchParams.get("otherUsername")?.trim() || "닉네임";
 
+  // 헤더 타이틀
+  const title = useMemo(() => otherUsername, [otherUsername]);
   const [msgs, setMsgs] = useState<ChatMessage[]>([]);
   const [text, setText] = useState("");
   const bottomRef = useRef<HTMLDivElement>(null);
@@ -76,11 +80,6 @@ export default function ChatRoomPage() {
 
   // 상대방 자동응답 타이머 정리용
   const replyTimerRef = useRef<number | null>(null);
-
-  const title = useMemo(
-    () => (roomId === "room-traction" ? "트랙션 팀원" : "닉네임"),
-    [roomId]
-  );
 
   const previewPost = mockPosts[0];
 
@@ -118,7 +117,7 @@ export default function ChatRoomPage() {
     setMsgs(afterMy);
     saveChat(roomId, afterMy);
 
-    // ✅ 먼저 비우기
+    // 먼저 비우기
     setText("");
 
     // 2) 상대방 자동 답장

@@ -205,7 +205,7 @@ export default function KoTripDetailPage() {
           <div className="mt-6">
             <div className="font-black mb-2">동행자 관련 정보</div>
             <div className="rounded-xl shadow p-4 text-sm text-neutral-600">
-              (더미) 동행자 조건/취향 요약이 들어갑니다.
+              동행자 조건/취향 요약이 들어갑니다.
             </div>
           </div>
 

@@ -1,7 +1,10 @@
 "use client";
 
+import { useMemo } from "react";
 import { useParams, useRouter } from "next/navigation";
 import MobileFrame from "@/components/mobile/MobileFrame";
+import { mockPosts } from "@/lib/koTripMock";
+import Image from "next/image";
 
 function IconBack() {
   return (
@@ -19,7 +22,34 @@ function IconBack() {
 
 export default function MatchedPage() {
   const router = useRouter();
-  const params = useParams<{ postId: string }>();
+  const params = useParams();
+
+  // postId 안전하게 파싱
+  const postIdRaw = (params as { postId?: string | string[] })?.postId;
+  const postId = Array.isArray(postIdRaw) ? postIdRaw[0] : postIdRaw;
+
+  // post 찾아서 작성자 닉네임 가져오기
+  const post = useMemo(() => {
+    if (!postId) return mockPosts[0];
+    return mockPosts.find((p) => p.id === postId) ?? mockPosts[0];
+  }, [postId]);
+
+  const authorName = post.nickname || "상대방";
+
+  // 상세페이지와 동일한 규칙으로 썸네일(원하면 사용)
+  const thumb =
+    post.purposeImages?.[Number(post.id) % (post.purposeImages?.length ?? 1)];
+
+  // 매칭 완료 페이지 chips도 post 기반으로
+  const chips = useMemo(() => {
+    const arr: string[] = [];
+    arr.push(`${post.start} ~ ${post.end} ${post.daysText}`);
+    arr.push("2명 모집");
+    arr.push("중간");
+    arr.push("인당 30만원대");
+    arr.push("여행 목적");
+    return arr;
+  }, [post]);
 
   return (
     <MobileFrame showTopBar={false} showBottomBar={false}>
@@ -41,32 +71,53 @@ export default function MatchedPage() {
 
         <div className="px-6 py-10">
           <div className="rounded-2xl shadow bg-white p-8 flex flex-col items-center">
+            {/* 상단 아이콘 */}
             <div className="flex items-center gap-4">
-              <div className="h-16 w-16 rounded-full bg-neutral-200" />
-              <div className="h-10 w-10 rounded-full bg-sky-200 flex items-center justify-center">
-                🤝
+              <div className="relative h-16 w-16 rounded-full bg-neutral-200 overflow-hidden">
+                <Image
+                  src="/images/profile.png"
+                  alt="나"
+                  fill
+                  className="object-contain p-3"
+                />
               </div>
-              <div className="h-16 w-16 rounded-full bg-neutral-200" />
+
+              <div className="relative h-10 w-10 rounded-full bg-sky-200 overflow-hidden">
+                <Image
+                  src="/icons/connect.svg"
+                  alt="매칭"
+                  fill
+                  className="object-contain p-2"
+                />
+              </div>
+
+              <div className="relative h-16 w-16 rounded-full bg-neutral-200 overflow-hidden">
+                <Image
+                  src="/icons/profile.png"
+                  alt="상대"
+                  fill
+                  className="object-contain p-3"
+                />
+              </div>
             </div>
 
+            {/* 여기! 작성자 닉네임 기반 문구 */}
             <div className="mt-6 text-center font-black text-lg">
-              용감한 호랑이 님과
+              {authorName} 님과
               <br />
               매칭이 완료되었습니다.
             </div>
 
+            {/* (선택) 매칭된 모집글 요약 */}
+            <div className="mt-3 text-xs text-neutral-600 text-center">
+              {post.title}
+            </div>
+
+            {/* chips */}
             <div className="mt-4 flex flex-wrap gap-2 justify-center">
-              {[
-                "25.12.14 ~ 25.12.15 (총 1박 2일)",
-                "n명 모집",
-                "여유로움",
-                "인당 30만원대",
-                "여행 목적",
-                "여행 목적",
-                "여행 목적",
-              ].map((c, i) => (
+              {chips.map((c, i) => (
                 <span
-                  key={i}
+                  key={`${c}-${i}`}
                   className="px-3 py-1 rounded-md shadow text-xs text-neutral-700 bg-white"
                 >
                   {c}
@@ -74,6 +125,7 @@ export default function MatchedPage() {
               ))}
             </div>
 
+            {/* 안전 팁 */}
             <div className="mt-6 w-full rounded-2xl shadow p-4">
               <div className="flex items-start gap-3">
                 <div className="h-9 w-9 rounded-full bg-sky-100 flex items-center justify-center">
@@ -90,9 +142,16 @@ export default function MatchedPage() {
               </ul>
             </div>
 
+            {/* 채팅으로 이동 */}
             <button
               type="button"
-              onClick={() => router.push(`/travel/chat/room-${params.postId}`)}
+              onClick={() =>
+                router.push(
+                  `/travel/chat/room-${
+                    post.id
+                  }?otherUsername=${encodeURIComponent(authorName)}`
+                )
+              }
               className="cursor-pointer mt-6 w-full h-12 rounded-2xl bg-sky-500 text-white font-black"
             >
               채팅으로 이동
