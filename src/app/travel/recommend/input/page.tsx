@@ -183,7 +183,7 @@ export default function RecommendInputPage() {
   const onNext = () => {
     if (!isValid) return;
 
-    // ✅ 기존 타입을 유지한다면: region1/region2를 출발/도착으로 사용
+    //  기존 타입을 유지한다면: region1/region2를 출발/도착으로 사용
     const payload: RecommendInput = {
       travelType,
       region1: `${fromProvinceName} ${fromDistrictName}`.trim(), // 출발지
@@ -284,7 +284,7 @@ export default function RecommendInputPage() {
             </div>
           </div>
 
-          {/* ✅ 출발지 */}
+          {/*  출발지 */}
           <div className="mt-6">
             <div className="text-sm font-semibold mb-2">출발지</div>
             <div className="grid grid-cols-2 gap-3">
@@ -322,7 +322,7 @@ export default function RecommendInputPage() {
             </div>
           </div>
 
-          {/* ✅ 도착지 */}
+          {/*  도착지 */}
           <div className="mt-6">
             <div className="text-sm font-semibold mb-2">도착지</div>
             <div className="grid grid-cols-2 gap-3">

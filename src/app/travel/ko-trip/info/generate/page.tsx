@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import MobileFrame from "@/components/mobile/MobileFrame";
 
@@ -9,7 +9,28 @@ const KO_TRIP_STEP1_KEY = "korail.koTripStep1.v1";
 const KO_TRIP_STEP2_KEY = "korail.koTripStep2.v1";
 const KO_TRIP_CREATED_KEY = "korail.koTripCreatedOnce.v1";
 
+type Step1 = {
+  startDate: string;
+  endDate: string;
+  region: string;
+  purpose: string;
+  budget: string;
+  intensity: string;
+  people: string;
+  mateTypes: string[];
+};
+
+type Step2 = {
+  gender: string;
+  age: string;
+  mbti: string;
+  wake: string;
+  food: string;
+  etc: string[];
+};
+
 function readJSON<T>(key: string): T | null {
+  if (typeof window === "undefined") return null;
   try {
     const raw = localStorage.getItem(key);
     if (!raw) return null;
@@ -33,31 +54,83 @@ function IconBack() {
   );
 }
 
+function formatDatePretty(yyyyMMdd: string) {
+  // "2025-12-14" -> "25.12.14"
+  if (!yyyyMMdd) return "";
+  const [y, m, d] = yyyyMMdd.split("-");
+  if (!y || !m || !d) return yyyyMMdd;
+  return `${y.slice(2)}.${m}.${d}`;
+}
+
+function nightsDaysText(start: string, end: string) {
+  if (!start || !end) return "";
+  const s = new Date(start);
+  const e = new Date(end);
+  const diff = Math.floor((e.getTime() - s.getTime()) / (1000 * 60 * 60 * 24));
+  // diff=1이면 1박2일
+  const nights = Math.max(0, diff);
+  const days = nights + 1;
+  if (days <= 0) return "";
+  return nights === 0 ? "당일" : `${nights}박 ${days}일`;
+}
+
+/**
+ *  Step1.purpose(문구) -> 상단 대표 이미지 경로 매핑
+ * - 아래 경로는 예시입니다. 프로젝트에 있는 실제 파일 경로로 바꿔주세요.
+ * - 매핑에 없는 목적이면 fallback("/images/map-sample.png")로 표시됩니다.
+ */
+const PURPOSE_IMAGE_MAP: Record<string, string> = {
+  "체험·액티비티": "/images/leisure.png",
+  "문화·예술·역사": "/images/culture.png",
+  "자연과 함께": "/images/nature.png",
+  "여유롭게 힐링": "/images/cozy.png",
+  "관광보다 먹방": "/images/visit.png",
+  "쇼핑은 열정적으로": "/images/shopping.png",
+  "여행지 느낌 물씬": "/images/vibe.png",
+  "유명 관광지 필수": "/images/travel.png",
+  "SNS 핫플": "/imagessns.png",
+};
+
 export default function KoTripGeneratePage() {
   const router = useRouter();
 
-  const step1 = useMemo(() => readJSON<any>(KO_TRIP_STEP1_KEY), []);
-  const step2 = useMemo(() => readJSON<any>(KO_TRIP_STEP2_KEY), []);
-
+  const [step1, setStep1] = useState<Step1 | null>(null);
+  const [step2, setStep2] = useState<Step2 | null>(null);
   const [authorComment, setAuthorComment] = useState("");
+
+  //  마운트 후 localStorage에서 로드
+  useEffect(() => {
+    const s1 = readJSON<Step1>(KO_TRIP_STEP1_KEY);
+    const s2 = readJSON<Step2>(KO_TRIP_STEP2_KEY);
+    setStep1(s1);
+    setStep2(s2);
+  }, []);
+
+  //  목적에 따라 상단 이미지 변경
+  const heroSrc = useMemo(() => {
+    const key = step1?.purpose?.trim() ?? "";
+    return PURPOSE_IMAGE_MAP[key] ?? "/images/map-sample.jpg";
+  }, [step1?.purpose]);
 
   const chips = useMemo(() => {
     if (!step1) return [];
-    const daysText = step1.startDate && step1.endDate ? "총 1박 2일" : "";
+
+    const periodText = nightsDaysText(step1.startDate, step1.endDate);
     return [
       {
         icon: "/icons/calendar.svg",
-        label: `${step1.startDate} ~ ${step1.endDate} (${daysText})`,
+        label: `${formatDatePretty(step1.startDate)} ~ ${formatDatePretty(
+          step1.endDate
+        )} (${periodText})`,
       },
-      { icon: "/icons/user.svg", label: `${step1.people ?? ""}` },
-      { icon: "/icons/bolt.svg", label: `${step1.intensity ?? ""}` },
-      { icon: "/icons/money.svg", label: `인당 30만원대` },
-      { icon: "/icons/pin.svg", label: `${step1.purpose ?? ""}` },
+      { icon: "/icons/user.svg", label: step1.people ?? "" },
+      { icon: "/icons/bolt.svg", label: step1.intensity ?? "" },
+      { icon: "/icons/money.svg", label: step1.budget ?? "" },
+      { icon: "/icons/pin.svg", label: step1.purpose ?? "" },
     ].filter((x) => x.label.trim().length > 0);
   }, [step1]);
 
   const onRegister = () => {
-    // “모집글 작성 경험” 처리
     localStorage.setItem(KO_TRIP_CREATED_KEY, "true");
     router.replace("/travel/ko-trip/info/done");
   };
@@ -66,7 +139,7 @@ export default function KoTripGeneratePage() {
     <MobileFrame showTopBar={false} showBottomBar={false}>
       <div className="h-full bg-white flex flex-col">
         {/* 헤더 */}
-        <header className="shrink-0 px-4 pt-3 pb-3  bg-white">
+        <header className="shrink-0 px-4 pt-3 pb-3 bg-white">
           <div className="flex items-center justify-between">
             <button
               type="button"
@@ -82,20 +155,20 @@ export default function KoTripGeneratePage() {
         </header>
 
         <div className="flex-1 min-h-0 overflow-y-auto px-5 py-5">
-          {/* 지도/이미지 박스 */}
+          {/*  목적 기반 상단 이미지 박스 */}
           <div className="relative h-44 w-full overflow-hidden rounded-3xl bg-neutral-200">
             <Image
-              src="/images/map-sample.jpg"
-              alt="map"
+              src={heroSrc}
+              alt={step1?.purpose ? `${step1.purpose} 이미지` : "map"}
               fill
               className="object-cover"
+              priority
             />
           </div>
 
           <div className="mt-5 text-2xl font-black">동행 구인 글 제목</div>
           <div className="mt-1 text-sm text-neutral-700">
-            여행 취향 선택을 취합해 AI가 써준 해당 동행 구인 글에 대한 간단한
-            소개 내용 표시
+            여행 취향 선택을 취합해 AI가 써준 소개 내용 표시
           </div>
 
           {/* 칩 */}
@@ -103,7 +176,7 @@ export default function KoTripGeneratePage() {
             {chips.map((c, i) => (
               <div
                 key={i}
-                className="inline-flex items-center gap-2 rounded-lg border px-3 py-2 text-xs text-neutral-800"
+                className="inline-flex items-center gap-2 rounded-lg shadow px-3 py-2 text-xs text-neutral-800"
               >
                 <Image src={c.icon} alt="" width={14} height={14} />
                 {c.label}
@@ -113,19 +186,36 @@ export default function KoTripGeneratePage() {
 
           <div className="mt-6">
             <div className="text-sm font-black">동행자 관련 정보</div>
-            <div className="mt-2 rounded-2xl border p-4 text-sm text-neutral-600 min-h-20">
-              {step2
-                ? `성별: ${step2.gender} / 연령대: ${step2.age} / MBTI: ${step2.mbti} / 기상: ${step2.wake} / 음식: ${step2.food}`
-                : "모달 입력받은거 취합해서 AI 글쓰기 결과로"}
+            <div className="mt-2 rounded-2xl p-4 shadow text-sm text-neutral-600 min-h-20">
+              {step2 ? (
+                <>
+                  성별: {step2.gender} / 연령대: {step2.age} / MBTI:{" "}
+                  {step2.mbti}
+                  <br />
+                  기상: {step2.wake} / 음식: {step2.food}
+                  {step2.etc?.length ? ` / 기타: ${step2.etc.join(", ")}` : ""}
+                </>
+              ) : (
+                "Step2 데이터가 없습니다. (이전 페이지에서 '다음'을 눌러 저장되었는지 확인)"
+              )}
             </div>
           </div>
 
           <div className="mt-6">
             <div className="text-sm font-black">작성자 관련 정보</div>
-            <div className="mt-2 rounded-2xl border p-4 text-sm text-neutral-600 min-h-20">
-              {step1
-                ? `출발지: ${step1.origin} / 여행지역: ${step1.region} / 여행유형: ${step1.travelType}`
-                : "모달 입력받은거 취합해서 AI 글쓰기 결과로"}
+            <div className="mt-2 rounded-2xl p-4 text-sm shadow text-neutral-600 min-h-20">
+              {step1 ? (
+                <>
+                  여행 지역: {step1.region}
+                  <br />
+                  동행 유형:{" "}
+                  {step1.mateTypes?.length ? step1.mateTypes.join(", ") : "-"}
+                  <br />
+                  여행 목적: {step1.purpose}
+                </>
+              ) : (
+                "Step1 데이터가 없습니다. (이전 페이지에서 '다음'을 눌러 저장되었는지 확인)"
+              )}
             </div>
           </div>
 
@@ -134,7 +224,7 @@ export default function KoTripGeneratePage() {
             <textarea
               value={authorComment}
               onChange={(e) => setAuthorComment(e.target.value)}
-              className="mt-2 w-full rounded-2xl border p-4 text-sm min-h-24"
+              className="mt-2 w-full rounded-2xl p-4 text-sm min-h-24 shadow"
               placeholder="추가하고 싶은 말이 있다면 써주세요."
             />
           </div>

@@ -222,7 +222,7 @@ export default function ChatRoomPage() {
             <input
               value={text}
               onChange={(e) => setText(e.target.value)}
-              // ✅ IME 조합 시작/끝 추적
+              // IME 조합 시작/끝 추적
               onCompositionStart={() => {
                 isComposingRef.current = true;
               }}
@@ -232,7 +232,7 @@ export default function ChatRoomPage() {
               onKeyDown={(e) => {
                 if (e.key !== "Enter") return;
 
-                // ✅ 조합 중 Enter는 "확정" 용도라 전송 금지
+                //  조합 중 Enter는 "확정" 용도라 전송 금지
                 if (isComposingRef.current) return;
 
                 e.preventDefault();
